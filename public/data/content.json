@@ -1,0 +1,174 @@
+{
+  "home": {
+    "title": "Financial Excellence",
+    "subtitle": "Chartered Accountants",
+    "cta": "Let's talk about your financial needs"
+  },
+  "cases": {
+    "projects": [
+      {
+        "slug": "startup-advisory",
+        "title": "Startup Financial Advisory",
+        "category": "business consulting",
+        "sections": [
+          {
+            "heading": "BRIEF",
+            "image": "/images/startup-brief.jpg",
+            "content": [
+              "Comprehensive financial advisory services for a technology startup in Bengaluru, including fund raising strategy, financial projections, and regulatory compliance. Our team helped structure the company's cap table and prepare investor-ready financial statements."
+            ]
+          },
+          {
+            "heading": "IMPLEMENTATION",
+            "image": "/images/startup-implementation.jpg",
+            "content": [
+              "We worked closely with the founders to establish robust accounting systems, implemented cloud-based bookkeeping solutions, and ensured GST compliance from day one. Our virtual CFO services provided strategic financial guidance during their seed funding round."
+            ]
+          },
+          {
+            "heading": "RESULTS",
+            "image": "/images/startup-results.jpg",
+            "content": [
+              "Successfully raised ₹5 crore in seed funding with our comprehensive financial documentation.",
+              "Implemented automated accounting systems reducing monthly closing time by 75%.",
+              "Achieved 100% compliance with Income Tax and GST regulations.",
+              "Provided ongoing CFO advisory services supporting business growth and expansion."
+            ]
+          }
+        ],
+        "tech": {
+          "icon1": "CA",
+          "icon2": "GST"
+        },
+        "contact": {
+          "name": "CA Rajesh Kumar",
+          "title": "Managing Partner",
+          "email": "rajesh@cafirm.in",
+          "phone": "+91 98765 43210"
+        }
+      },
+      {
+        "category": "tax advisory",
+        "title": "Corporate Tax Planning",
+        "slug": "corporate-tax-planning",
+        "sections": [
+          {
+            "heading": "BRIEF",
+            "content": [
+              "Strategic tax planning and optimization for a mid-sized manufacturing company facing complex tax challenges across multiple jurisdictions in India."
+            ]
+          }
+        ]
+      },
+      {
+        "category": "audit & assurance",
+        "title": "Statutory Audit Services",
+        "slug": "statutory-audit",
+        "sections": [
+          {
+            "heading": "BRIEF",
+            "content": [
+              "End-to-end statutory audit services for a group of companies ensuring compliance with Companies Act and accounting standards."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "services": {
+    "items": [
+      {
+        "title": "Tax Planning & Advisory",
+        "description": "Strategic tax optimization, planning and compliance solutions for businesses and individuals across direct and indirect taxation"
+      },
+      {
+        "title": "Audit & Assurance",
+        "description": "Comprehensive statutory, internal, and tax audit services ensuring regulatory compliance and financial accuracy"
+      },
+      {
+        "title": "GST Services",
+        "description": "Complete GST registration, filing, compliance management, and advisory services for seamless indirect tax operations"
+      },
+      {
+        "title": "Business Advisory",
+        "description": "Strategic business consulting, financial planning, feasibility studies, and growth strategy development"
+      },
+      {
+        "title": "Accounting & Bookkeeping",
+        "description": "Complete bookkeeping, financial reporting, MIS preparation, and cloud-based accounting solutions"
+      },
+      {
+        "title": "Company Registration",
+        "description": "Business incorporation, company registration, LLP formation, and all regulatory compliance services"
+      },
+      {
+        "title": "Virtual CFO Services",
+        "description": "Strategic financial leadership, cash flow management, budgeting, and business performance monitoring"
+      },
+      {
+        "title": "Startup Services",
+        "description": "End-to-end startup support including incorporation, funding advisory, compliance, and financial structuring"
+      }
+    ]
+  },
+  "technologies": {
+    "title": "Tools & Expertise",
+    "description": "We leverage the latest accounting software and technologies to deliver efficient, accurate, and timely financial services to our clients.",
+    "items": [
+      {
+        "name": "Tally ERP",
+        "icon": "T"
+      },
+      {
+        "name": "QuickBooks",
+        "icon": "QB"
+      },
+      {
+        "name": "Zoho Books",
+        "icon": "Z"
+      },
+      {
+        "name": "SAP FICO",
+        "icon": "SAP"
+      },
+      {
+        "name": "GST Portal",
+        "icon": "GST"
+      },
+      {
+        "name": "Income Tax",
+        "icon": "IT"
+      },
+      {
+        "name": "MCA Portal",
+        "icon": "MCA"
+      },
+      {
+        "name": "Excel Analytics",
+        "icon": "XL"
+      },
+      {
+        "name": "Power BI",
+        "icon": "PBI"
+      }
+    ]
+  },
+  "contact": {
+    "person": {
+      "name": "CA Rajesh Kumar",
+      "title": "Managing Partner",
+      "email": "rajesh@cafirm.in",
+      "phone": "+91 98765 43210"
+    },
+    "address": {
+      "street": "MG Road, Ashok Nagar",
+      "city": "Bengaluru, Karnataka 560001",
+      "phone": "+91 80 4567 8900",
+      "email": "contact@cafirm.in"
+    },
+    "careers": {
+      "text": "Join our growing team of professionals?",
+      "email": "careers@cafirm.in"
+    }
+  }
+}
