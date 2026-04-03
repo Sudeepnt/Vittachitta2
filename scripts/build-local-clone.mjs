@@ -5,7 +5,12 @@ const PROJECT_ROOT = process.cwd();
 const CLONE_PAGES_ROOT = path.join(PROJECT_ROOT, ".clone", "pages");
 const PUBLIC_ROOT = path.join(PROJECT_ROOT, "public");
 
-const SOURCE_HOST = Buffer.from("ZHVjZXJhcGFydG5lcnMuY29t", "base64").toString("utf8");
+const SOURCE_HOST = process.env.SNAPSHOT_SOURCE_HOST?.trim();
+if (!SOURCE_HOST) {
+  throw new Error(
+    "SNAPSHOT_SOURCE_HOST is required. Local-only mode is enabled and no default remote host is configured."
+  );
+}
 const SOURCE_HOST_WWW = `www.${SOURCE_HOST}`;
 const SOURCE_WPE_HOST = `${SOURCE_HOST.replace(/\.com$/, "")}.wpenginepowered.com`;
 const SOURCE_WP_HOST = `${SOURCE_HOST.replace(/\.com$/, "")}.wpengine.com`;
