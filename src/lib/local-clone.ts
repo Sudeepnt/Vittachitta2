@@ -4,6 +4,9 @@ import path from "node:path";
 const PROJECT_ROOT = process.cwd();
 const PAGES_ROOT = path.join(PROJECT_ROOT, ".clone", "pages");
 const PUBLIC_ROOT = path.join(PROJECT_ROOT, "public");
+const UPLOADS_PREFIX = "/wp-content/uploads/";
+const SINGLE_UPLOAD_VIDEO_PATH = "/wp-content/uploads/2020/07/200730_Cera3d_Investing_BG.mp4";
+const SINGLE_LOGO_PATH = "/wp-content/themes/accupress/assets/media/Menu_CeraLogo.png";
 
 const CONTENT_TYPE_BY_EXTENSION: Record<string, string> = {
   ".css": "text/css; charset=UTF-8",
@@ -75,6 +78,23 @@ function neutralizeExternalSrcset(srcsetValue: string) {
 function sanitizeHtmlForLocalOnly(html: string) {
   let sanitized = html;
 
+  // Ensure the top logo/wordmark always routes to homepage.
+  sanitized = sanitized.replace(
+    /<a([^>]*class=["'][^"']*header__logo[^"']*["'][^>]*?)href=["'][^"']*["']([^>]*)>/gi,
+    '<a$1href="/"$2>'
+  );
+
+  // UI-only clone mode: collapse all upload videos to one shared local video.
+  sanitized = sanitized.replace(
+    /\/wp-content\/uploads\/[A-Za-z0-9@%_./+-]+\.(mp4|webm|mov|m4v)/gi,
+    SINGLE_UPLOAD_VIDEO_PATH
+  );
+  // Non-video upload assets (images/pdfs/etc.) use one static local logo.
+  sanitized = sanitized.replace(
+    /\/wp-content\/uploads\/[A-Za-z0-9@%_./+-]+\.(?!mp4|webm|mov|m4v)[A-Za-z0-9]+/gi,
+    SINGLE_LOGO_PATH
+  );
+
   sanitized = sanitized.replace(
     /<script\b[^>]*\bsrc\s*=\s*["'](?:https?:\/\/|\/\/)[^"']*["'][^>]*>\s*<\/script>/gi,
     ""
@@ -103,10 +123,26 @@ function sanitizeHtmlForLocalOnly(html: string) {
 function sanitizeTextAssetForLocalOnly(text: string) {
   let sanitized = text;
 
+  sanitized = sanitized.replace(
+    /\/wp-content\/uploads\/[A-Za-z0-9@%_./+-]+\.(mp4|webm|mov|m4v)/gi,
+    SINGLE_UPLOAD_VIDEO_PATH
+  );
+  sanitized = sanitized.replace(
+    /\/wp-content\/uploads\/[A-Za-z0-9@%_./+-]+\.(?!mp4|webm|mov|m4v)[A-Za-z0-9]+/gi,
+    SINGLE_LOGO_PATH
+  );
   sanitized = sanitized.replace(/@import\s+(?:url\()?["']?(?:https?:\/\/|\/\/)[^"')]+["']?\)?\s*;?/gi, "");
   sanitized = sanitized.replace(/url\(\s*["']?(?:https?:\/\/|\/\/)[^"')]+["']?\s*\)/gi, 'url("")');
 
   return sanitized;
+}
+
+function isUploadsAssetPath(pathnameValue: string) {
+  return pathnameValue.startsWith(UPLOADS_PREFIX);
+}
+
+function isVideoExtension(pathnameValue: string) {
+  return [".mp4", ".webm", ".mov", ".m4v"].includes(path.extname(pathnameValue).toLowerCase());
 }
 
 function safePathname(pathnameValue: string) {
@@ -147,6 +183,30 @@ function contentTypeForAsset(pathnameValue: string) {
 export async function serveLocalClone(pathnameValue: string) {
   if (path.extname(pathnameValue)) {
     try {
+      if (isUploadsAssetPath(pathnameValue)) {
+        if (isVideoExtension(pathnameValue)) {
+          const sharedVideoAsset = await readFile(filePathForPublicAsset(SINGLE_UPLOAD_VIDEO_PATH));
+          return new Response(sharedVideoAsset, {
+            headers: {
+              ...securityHeaders(),
+              "cache-control": "public, max-age=31536000, immutable",
+              "content-type": "video/mp4",
+            },
+            status: 200,
+          });
+        }
+
+        const logoAsset = await readFile(filePathForPublicAsset(SINGLE_LOGO_PATH));
+        return new Response(logoAsset, {
+          headers: {
+            ...securityHeaders(),
+            "cache-control": "public, max-age=31536000, immutable",
+            "content-type": "image/png",
+          },
+          status: 200,
+        });
+      }
+
       const assetFilePath = filePathForPublicAsset(pathnameValue);
       const extension = path.extname(pathnameValue).toLowerCase();
       const headers = {
