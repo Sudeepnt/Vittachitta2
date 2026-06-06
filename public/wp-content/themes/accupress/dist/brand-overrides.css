@@ -9,7 +9,7 @@
   display: inline-block;
   font-family: var(--SangBleu);
   font-weight: 500;
-  font-size: 3.052rem;
+  font-size: 2.46rem;
   line-height: 1;
   letter-spacing: 0.01em;
   color: inherit;
@@ -19,7 +19,7 @@
 
 @media (max-width: 800px) {
   .header__logo__wordmark {
-    font-size: 2.441rem;
+    font-size: 1.965rem;
   }
 }
 
@@ -52,7 +52,7 @@
   margin: 0 0 1.35rem;
   color: var(--gold);
   font-family: var(--AmericaExtended);
-  font-size: clamp(0.72rem, 1vw, 0.9rem);
+  font-size: clamp(0.83rem, 1.15vw, 1.04rem);
   line-height: 1.25;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -63,7 +63,7 @@
   color: var(--grey);
   font-family: var(--SangBleu);
   font-weight: 500;
-  font-size: clamp(2.8rem, 5.8vw, 6.65rem);
+  font-size: clamp(3.22rem, 6.7vw, 7.65rem);
   line-height: 0.98;
   letter-spacing: 0;
 }
@@ -73,7 +73,7 @@
   margin: clamp(1.35rem, 3vh, 2.1rem) 0 0;
   color: rgba(236, 236, 236, 0.88);
   font-family: var(--America);
-  font-size: clamp(1rem, 1.3vw, 1.22rem);
+  font-size: clamp(1.15rem, 1.5vw, 1.4rem);
   line-height: 1.55;
   letter-spacing: 0.01em;
 }
@@ -93,7 +93,7 @@
   padding: 0.95rem 1.35rem;
   border: 1px solid var(--gold);
   font-family: var(--AmericaExtended);
-  font-size: 0.82rem;
+  font-size: 0.94rem;
   line-height: 1.1;
   letter-spacing: 0.06em;
   text-decoration: none;
@@ -134,7 +134,7 @@
 .vc-rotator__stem {
   color: var(--gold);
   font-family: var(--SangBleu);
-  font-size: clamp(1.25rem, 1.9vw, 1.75rem);
+  font-size: clamp(1.44rem, 2.2vw, 2.02rem);
   line-height: 1;
   white-space: nowrap;
 }
@@ -143,10 +143,10 @@
   position: relative;
   display: block;
   width: auto;
-  min-height: calc(clamp(1.25rem, 1.9vw, 1.75rem) * 4.8);
+  min-height: calc(clamp(1.44rem, 2.2vw, 2.02rem) * 4.8);
   overflow: visible;
   font-family: var(--America);
-  font-size: clamp(1.25rem, 1.9vw, 1.75rem);
+  font-size: clamp(1.44rem, 2.2vw, 2.02rem);
   line-height: 1.25;
   color: rgba(236, 236, 236, 0.88);
   white-space: nowrap;
