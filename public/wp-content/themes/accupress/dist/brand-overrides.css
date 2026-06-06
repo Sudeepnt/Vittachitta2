@@ -192,9 +192,13 @@
   padding-bottom: 8rem;
 }
 
+.story__firstsection__blur > p {
+  color: var(--black);
+}
+
 .vc-story-block .description h4 {
   margin: 0 0 1.4rem;
-  color: var(--darkblue);
+  color: var(--black);
   font-family: var(--SangBleu);
   font-weight: 500;
   font-size: clamp(2rem, 3.1vw, 3.8rem);
@@ -203,7 +207,7 @@
 }
 
 .vc-story-block .description p {
-  color: rgba(22, 36, 71, 0.82);
+  color: var(--black);
 }
 
 .vc-reveal-stack {
@@ -260,13 +264,17 @@
 .vc-reveal-card p,
 .vc-shift-row span,
 .vc-ledger__column--muted p {
-  color: rgba(22, 36, 71, 0.68);
+  color: var(--black);
+}
+
+.vc-story-block .vc-reveal-card p {
+  color: var(--black) !important;
 }
 
 .vc-closing-line {
   max-width: 48rem;
   margin: 3rem 0 0;
-  color: var(--darkblue);
+  color: var(--black);
   font-family: var(--SangBleu);
   font-size: clamp(1.75rem, 2.4vw, 3rem);
   line-height: 1.12;
@@ -335,7 +343,7 @@
 .vc-service-card p,
 .vc-definition-line p,
 .vc-principle-item p {
-  color: rgba(22, 36, 71, 0.76);
+  color: var(--black);
 }
 
 .vc-definition-line {
@@ -419,7 +427,7 @@
   position: absolute;
   left: 1.25rem;
   top: 1.1rem;
-  color: rgba(22, 36, 71, 0.35);
+  color: var(--black);
   font-family: var(--SangBleu);
   font-size: 1.6rem;
   line-height: 1;
@@ -431,10 +439,12 @@
 
 .vc-how-we-work .principle-list__item {
   color: var(--darkblue);
+  padding-left: 4.9rem;
 }
 
 .vc-how-we-work .principle-list__item:before {
   content: counter(listCounter, decimal-leading-zero) ".";
+  left: -3.75rem;
 }
 
 .vc-how-we-work .principle-list__item__title {
