@@ -86,11 +86,9 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
         <h3 class="section_name">menu</h3>
         <div class="menu-main-menu-container"><ul id="menu-main-menu" class="menu"><li id="menu-item-177" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-177"><a href="/story/">Story</a></li>
 <li id="menu-item-501" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item current_page_item menu-item-501"><a href="/how-we-work/" aria-current="page">How we work</a></li>
-<li id="menu-item-79" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-79"><a href="/expertise/">Expertise</a></li>
-<li id="menu-item-84" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-84"><a href="/leadership/">Leadership</a></li>
-<li id="menu-item-83" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-83"><a href="/affiliations/">Affiliations</a></li>
-<li id="menu-item-319" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-319"><a href="/news-and-insights/">News and Insights</a></li>
-<li id="menu-item-19" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19"><a href="/careers/">Careers</a></li>
+<li id="menu-item-79" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-79"><a href="/expertise/">What We Own</a></li>
+<li id="menu-item-84" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-84"><a href="/leadership/">When to Call</a></li>
+<li id="menu-item-19" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19"><a href="/careers/">Talk to us</a></li>
 </ul></div>      </div>
       <div class="nav__mainwrapper__content__right">
                   <h3 class="section_name">Contact vitthachittha partners</h3>
@@ -158,31 +156,34 @@ Floor 4 - Stamford, CT 06902                    </a>
 <main class="work vc-how-page">
   <h1 class="work__title">How we work</h1>
   <section class="work__firstsection vc-how-page__section">
-    <h2 class="work__firstsection__title">Same engine, every engagement. That's what makes us reliable.</h2>
+    <h2 class="work__firstsection__title">Same engine, every engagement.<br />That's what makes us reliable.</h2>
     <div class="story__secondsection__rightcontent__principle vc-how-we-work vc-how-page__process">
-      <ul class="principle-list">
-        <li class="principle-list__item vc-process-step">
+      <div class="principle-list vc-process-flow">
+        <div class="principle-list__item vc-process-step" data-step="1">
           <p class="principle-list__item__title">Discover</p>
           <p>We learn the company, the trigger, the deadline, and the finance ecosystem already in place. We define, in writing, what “closed” actually means.</p>
-        </li>
-        <li class="principle-list__item vc-process-step">
+        </div>
+        <div class="principle-list__item vc-process-step" data-step="2">
           <p class="principle-list__item__title">Map</p>
           <p>Every stakeholder, task, dependency, and risk — captured. We build the single source of truth and put our name on the outcome.</p>
-        </li>
-        <li class="principle-list__item vc-process-step vc-process-step--loop">
-          <p class="principle-list__item__title">Orchestrate</p>
-          <p>We drive the work. Coordinate consultants, route information, unblock bottlenecks. You hear from us — not from twelve people.</p>
-        </li>
-        <li class="principle-list__item vc-process-step vc-process-step--loop">
-          <p class="principle-list__item__title">Safeguard</p>
-          <p>Continuous risk detection. We flag what's drifting before it breaks, and escalate to you only what truly needs you.</p>
-        </li>
-        <li class="principle-list__item vc-process-step">
+        </div>
+        <div class="vc-process-loop-shell">
+          <div class="vc-process-loop-icon" aria-hidden="true">↻</div>
+          <div class="principle-list__item vc-process-step vc-process-step--loop" data-step="3">
+            <p class="principle-list__item__title">Orchestrate</p>
+            <p>We drive the work. Coordinate consultants, route information, unblock bottlenecks. You hear from us — not from twelve people.</p>
+          </div>
+          <div class="principle-list__item vc-process-step vc-process-step--loop" data-step="4">
+            <p class="principle-list__item__title">Safeguard</p>
+            <p>Continuous risk detection. We flag what's drifting before it breaks, and escalate to you only what truly needs you.</p>
+          </div>
+          <p class="vc-loop-note">Runs as a loop until close</p>
+        </div>
+        <div class="principle-list__item vc-process-step" data-step="5">
           <p class="principle-list__item__title">Close &amp; Learn</p>
           <p>We drive to signature, funding, clearance. Then every lesson hardens into the playbook — so the next engagement starts smarter.</p>
-        </li>
-      </ul>
-      <p class="vc-loop-note">↻ runs as a loop until close.</p>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -197,6 +198,47 @@ Floor 4 - Stamford, CT 06902                    </a>
   </nav>
 </footer>		</div>
 
+		<script type="text/javascript">
+		document.addEventListener("DOMContentLoaded", function () {
+			var processFlow = document.querySelector(".vc-how-we-work .principle-list");
+			if (!processFlow) {
+				return;
+			}
+
+			processFlow.classList.add("principle-list--animated-ready");
+
+			var revealList = function () {
+				window.requestAnimationFrame(function () {
+					window.requestAnimationFrame(function () {
+						processFlow.classList.add("is-visible");
+					});
+				});
+			};
+
+			window.requestAnimationFrame(function () {
+				if (!("IntersectionObserver" in window)) {
+					revealList();
+					return;
+				}
+
+				var observer = new IntersectionObserver(function (entries) {
+					entries.forEach(function (entry) {
+						if (!entry.isIntersecting) {
+							return;
+						}
+
+						revealList();
+						observer.disconnect();
+					});
+				}, {
+					threshold: 0.18,
+					rootMargin: "0px 0px -12% 0px"
+				});
+
+				observer.observe(processFlow);
+			});
+		});
+		</script>
 		<script type="text/javascript" src="/wp-content/themes/accupress/dist/main.js?ver=1738063432" id="main-js"></script>
 <script type="text/javascript" id="addtoany-core-js-before">
 /* <![CDATA[ */
