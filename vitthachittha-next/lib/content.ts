@@ -6,7 +6,7 @@ import site from '@/content/site.json';
 // prerendered, so nothing here runs per request.
 
 export type PageMeta = { id: string; title: string | null; description: string };
-export type Chrome = 'sprite' | 'header' | 'switchM' | 'curtain' | 'menu' | 'footer';
+export type Chrome = 'sprite' | 'header' | 'switchM' | 'curtain' | 'menu' | 'footer' | 'cookie';
 
 const dir = path.join(process.cwd(), 'content');
 

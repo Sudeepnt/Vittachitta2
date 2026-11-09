@@ -44,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="overlay" id="menu" hidden role="dialog" aria-modal="true" aria-label="Menu" suppressHydrationWarning dangerouslySetInnerHTML={raw('menu')} />
         {children}
         <footer className="foot" suppressHydrationWarning dangerouslySetInnerHTML={raw('footer')} />
+        <div className="cookie" id="cookie" hidden role="region" aria-label="Cookie notice" suppressHydrationWarning dangerouslySetInnerHTML={raw('cookie')} />
         {/* The static export gets the script inlined at the end of <body> by scripts/inline-assets.mjs. */}
         {process.env.STATIC_EXPORT ? null : <script src={runtimeSrc()} />}
         <Navigator />
