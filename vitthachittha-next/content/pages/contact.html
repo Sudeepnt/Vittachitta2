@@ -1,0 +1,36 @@
+<section class="pnl" data-label="Contact">
+    <div class="wrap split even">
+      <div class="col">
+        <p class="k">Talk to us</p>
+        <h1 class="hero-h" data-split style="font-size:clamp(44px,6.4vw,92px)">Tell us what's coming.</h1>
+        <p class="sub">We'll tell you where the gaps are. And how we'd close them.</p>
+        <ol class="steps"><li><span>01</span>You write a few lines.</li><li><span>02</span>We reply in one business day.</li><li><span>03</span>Thirty minutes. No deck. No obligation.</li></ol>
+        <div class="contact-row"><div class="office"><span>Bengaluru</span>Office address to be added</div><div class="office"><span>Write</span>hello@vitthachittha.com</div></div>
+      </div>
+      <div class="col">
+        <form class="form" id="contactForm" novalidate>
+          <div class="pair">
+            <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" autocomplete="name" required></div>
+            <div class="field"><label for="f-company">Company</label><input id="f-company" name="company" autocomplete="organization"></div>
+          </div>
+          <div class="field"><label for="f-email">Work email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+          <fieldset class="field"><legend>What's on your horizon?</legend>
+            <div class="radios">
+              <input type="radio" name="horizon" id="h-setup" value="Setting up"><label for="h-setup">Setting up</label>
+              <input type="radio" name="horizon" id="h-india" value="Entering India"><label for="h-india">Entering India</label>
+              <input type="radio" name="horizon" id="h-books" value="Books catch-up"><label for="h-books">Books catch-up</label>
+              <input type="radio" name="horizon" id="h-raise" value="Raise" checked><label for="h-raise">Raise</label>
+              <input type="radio" name="horizon" id="h-audit" value="Audit"><label for="h-audit">Audit</label>
+              <input type="radio" name="horizon" id="h-dd" value="Diligence"><label for="h-dd">Diligence</label>
+              <input type="radio" name="horizon" id="h-loan" value="Loan"><label for="h-loan">Loan</label>
+              <input type="radio" name="horizon" id="h-exit" value="Exit"><label for="h-exit">Exit</label>
+            </div>
+          </fieldset>
+          <div class="field"><label for="f-notes">Anything we should know? (optional)</label><textarea id="f-notes" name="notes"></textarea></div>
+          <p class="err" id="formErr" hidden></p>
+          <div class="foot-row"><button type="submit" class="btn btn-solid">Send <span class="arr" aria-hidden="true">→</span></button><p>A clear read on where your finance risk really sits.</p></div>
+        </form>
+        <div class="form done" id="formDone" hidden aria-live="polite"><p class="k">Received</p><h2>Thank you.</h2><p>One business day. A first read on where to look.</p><p><button class="btn btn-ghost sm" type="button" id="formReset">Send another</button></p></div>
+      </div>
+    </div>
+  </section>
