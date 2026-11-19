@@ -21,23 +21,114 @@
     var done=function(){h.innerHTML=h._orig;h.style.height='';h.classList.remove('roll-play');h._rolling=0};
     if(last)last.addEventListener('animationend',done);setTimeout(function(){if(h._rolling)done()},idx*step+1600)}
 
-  /* ---------- reveal on scroll ---------- */
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);if(e.target._on)e.target._on()}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
-  var io0=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io0.unobserve(e.target)}})},{threshold:0,rootMargin:'0px 0px -10% 0px'});
-  function rv(sel,cls,stag,mod){$$(sel).forEach(function(e){if(e._rv)return;e._rv=1;var i=[].indexOf.call(e.parentNode.children,e);e.classList.add(cls||'rv');if(stag)e.style.setProperty('--rd',((mod?i%mod:i)*stag)+'ms');(cls==='rvw'?io0:io).observe(e)})}
-  rv('.hrow > *','rv',90);
-  rv('.cgrid > div','rv',80,4);rv('.bx','rv');rv('.brf','rv',70);rv('.tsc','rv');rv('.devb','rv');
-  rv('#acc','rv');rv('.svc-art','rv');rv('.svc-m article','rv');
-  rv('.res','rv');rv('.res2 > div','rv',110);rv('.mstats','rv');
-  rv('.blog > a','rv',90);rv('.all','rv');
-  rv('.fg','rvw',0);rv('.ppl > *','rv',80,4);rv('.fcols > div','rv',70);rv('.fbot > *','rv',120);
-  rv('.win','rvwin');rv('.codew','rvwin');rv('.tree li','rvx',130);rv('.tree-root','rvx');
-  rv('.soc','rv');rv('.formv > *','rv',100);rv('.letter-full p','rv',40,6);
-  /* process diagram */
-  var ps=$('procSvg');if(ps){ps.classList.add('pm');var gi=0,li=0;[].forEach.call(ps.children,function(c){if(c.tagName==='g')c.style.setProperty('--i',gi++);else if(c.tagName==='line')c.style.setProperty('--i',(li++)/2)});io.observe(ps)}
-  var st=$('steps');if(st&&st.parentNode)st.parentNode.classList.add('mv');
+  /* ---------- reveal on scroll: one after another ----------
+     Every group of cards/rows reveals in DOM order through a per-group queue: an item never starts sooner than `gap` ms after the
+     previous item of its group, so a row of cards, a list or a grid always plays as a sequence, slow scroll or fast.
+     Items already scrolled past (anchor jump, reload mid-page) are shown instantly so scrolling back up never finds a hole. */
+  var plat=$('platforms'),pending=[],held=[];
+  function gated(e){return e._p&&plat&&parseFloat(plat.style.opacity||'1')<.6}
+  function dom(a,b){return a.compareDocumentPosition(b)&4?-1:1}
+  function drop(a,e){var i=a.indexOf(e);if(i>-1)a.splice(i,1)}
+  function show(e,instant){
+    if(e._sh)return;e._sh=1;
+    var d=e._b||0;
+    if(instant){e.classList.add('nt')}
+    else if(e._gap){var now=performance.now(),g=e._g,t=Math.max(now,g._q||0);d+=Math.min(t-now,1400);g._q=t+e._gap}
+    e.style.setProperty('--rd',Math.round(d)+'ms');
+    e.classList.add('in');
+    if(e._on)e._on(instant);
+    drop(pending,e);drop(held,e)}
+  function mkio(th,rm){var o=new IntersectionObserver(function(es){
+    es.sort(function(a,b){return dom(a.target,b.target)}).forEach(function(en){var t=en.target;
+      if(en.isIntersecting){o.unobserve(t);if(gated(t)){if(held.indexOf(t)<0)held.push(t)}else show(t)}
+      else if(en.boundingClientRect.bottom<=0&&en.boundingClientRect.height>0){o.unobserve(t);show(t,true)}})},{threshold:th,rootMargin:rm});return o}
+  var ioN=mkio(.12,'0px 0px -6% 0px'),ioW=mkio(0,'0px 0px -10% 0px');
+  /* catch-up: anything that was jumped over, and anything held back until the section under the hero is visible */
+  var sw=0;
+  function sweep(){sw=0;var i,e,r;
+    pending.slice().forEach(function(e){var r=e.getBoundingClientRect();if(r.height>0&&r.bottom<-30)show(e,true)});
+    held.slice().sort(dom).forEach(function(e){if(gated(e))return;var r=e.getBoundingClientRect();show(e,r.bottom<-30)})}
+  window.addEventListener('scroll',function(){if(!sw)sw=requestAnimationFrame(sweep)},{passive:true});
+  /* rv(selector, class, {gap: queue gap in ms, b: base delay, step: extra delay per sibling index, g: group selector, w: reveal as soon as it touches the edge}) */
+  function rv(sel,cls,o){o=o||{};$$(sel).forEach(function(e){if(e._rv)return;e._rv=1;
+    var par=e.parentNode,ix=[].indexOf.call(par.children,e);
+    e._g=o.g?(e.closest(o.g)||par):par;e._gap=o.gap||0;e._b=(o.b||0)+(o.step?ix*o.step:0);e._p=!!(plat&&plat.contains(e));
+    e.classList.add(cls||'rv');(o.w?ioW:ioN).observe(e);pending.push(e)})}
+
+  /* section headings: the title rises out of its line, then the paragraph follows */
+  rv('.hrow > h2','rvh',{g:'.hrow',w:1});rv('.hrow > p,.hrow > div','rv',{g:'.hrow',b:200});
+  /* cards on the sub-pages, in reading order */
+  rv('.cgrid > div','rvx',{gap:120,g:'.cgrid'});
+  rv('.bx','rv');rv('.brf','rvx',{gap:110});rv('.tsc','rv');rv('.devb','rv');
+  rv('.days > div','rvx',{gap:130});
+  /* services: slab art; the three cards on the left are sequenced by scroll further down */
+  rv('.svc-art','rv',{b:120});rv('.svc-m article','rvx',{gap:170,g:'#svcM'});
+  var sa=document.querySelector('.svc-art'),sv0=$('svcSvg');
+  function drip(s){if(!s)return;s.classList.remove('dn','up');void s.getBoundingClientRect();s.classList.add('dn')}
+  if(sa)sa._on=function(){drip(sv0)};
+  $$('.svc-m article').forEach(function(a){a._on=function(){drip(a.querySelector('svg'))}});
+  /* founders: the three boxes stack up one after another */
+  rv('.res','rv');rv('.mstats','rv');rv('.res2 > div','rvx',{gap:150,g:'.res2'});
+  var bs=$('boxSvg');
+  if(bs){var kids=[].slice.call(bs.children),at=0;
+    [6,6,kids.length-12].forEach(function(n,k){var w=document.createElementNS('http://www.w3.org/2000/svg','g');w.setAttribute('class','bxg');w.style.setProperty('--bk',k);bs.insertBefore(w,kids[at]);kids.slice(at,at+n).forEach(function(c){w.appendChild(c)});at+=n});
+    var bb=bs.closest('.res');if(bb)bb._on=function(){bs.classList.add('go')}}
+  /* letters */
+  rv('.blog > a','rv',{gap:130,g:'.blog'});rv('.all','rv');
+  /* the table: the window rises, then the tree is drawn root first, one row after another */
+  rv('.win','rvwin');rv('.codew','rvwin');rv('.tree-root','rvx');rv('.tree li','rvx',{gap:220,g:'.tree'});
+  /* questions: each group draws its frame, then its rows come in top to bottom */
+  rv('.fg','rvw',{w:1,gap:160,g:'.pad'});
+  $$('.fg').forEach(function(f){$$('details',f).forEach(function(d,k){d.style.setProperty('--k',k)})});
+  /* people, forms, letter, closing band, footer */
+  rv('.ppl > .ph','rvw',{w:1});rv('.ppl li','rvx',{gap:120,g:'.ppl'});
+  rv('.soc','rv',{b:150});rv('.formv .l > *','rvx',{gap:90,g:'.formv'});rv('.letter-full p','rv',{step:40});
+  rv('#cband .btns','rv',{b:450});
+  rv('.fcols > div','rv',{gap:90,g:'.fcols'});rv('.fbot > *','rv',{gap:150,g:'.fbot'});
+
+  /* ---------- services: the three cards on the left appear one after another as the pinned section scrolls ----------
+     Card 1 arrives as the section comes in, card 2 just before its turn to open, card 3 just before its turn.
+     The frame around them grows with each arrival; hidden cards keep their place so nothing below ever shifts. */
+  (function(){var svc=plat,acc=$('acc'),it=$$('#acc .acc-i'),nav=$('nav'),pin=svc&&svc.querySelector('.svc-pin');if(!svc||!acc||!pin||it.length<3)return;
+    var TH=[0,.22,.55],mq=matchMedia('(min-width:901px)'),on=false,last=-1,tm=0,probe={_p:true};
+    function pinned(){return mq.matches&&svc.offsetParent!==null&&!!svc.style.height&&!svc.classList.contains('nopin')}
+    function cutFor(n){var c=1,k;if(n<1)return acc.offsetHeight+2;for(k=n;k<3;k++)c+=it[k].offsetHeight;return c}
+    function fit(n){acc.style.clipPath='inset(-2px -2px '+cutFor(n)+'px -2px)'}
+    function upd(){
+      if(!pinned()){if(on){on=false;last=-1;acc.classList.remove('sqm');acc.style.clipPath='';it.forEach(function(a){a.classList.remove('sq','sqin');a.style.transitionDelay=''})}return}
+      if(!on){on=true;acc.classList.add('sqm');it.forEach(function(a){a.classList.add('sq')})}
+      var r=svc.getBoundingClientRect(),H=Math.max(1,svc.offsetHeight-pin.offsetHeight),p=(nav.offsetHeight-r.top)/H,n=0;
+      if(!gated(probe)&&r.top<window.innerHeight*.62)n=1;
+      if(n&&p>=TH[1])n=2;if(n>1&&p>=TH[2])n=3;
+      if(n===last)return;var prev=Math.max(last,0);last=n;
+      it.forEach(function(a,k){a.classList.toggle('sqin',k<n);a.style.transitionDelay=(k<n&&k>=prev)?((k-prev)*170)+'ms':''});
+      fit(n);clearTimeout(tm);tm=setTimeout(function(){fit(last)},560)}
+    window.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',function(){setTimeout(upd,260)});
+    window.addEventListener('hashchange',function(){setTimeout(upd,120)});window.addEventListener('load',function(){setTimeout(upd,120)});
+    setTimeout(upd,250);setTimeout(upd,1200)})();
+
+  /* ---------- "Built inside your company, in order.": a flow, left to right ----------
+     funnel in -> step 1 icon -> line draws to step 2 -> ... -> funnel out. Each column hands off to the next:
+     the icon lands, a tick runs down to its card, the card's frame wipes open, and the line to the next icon starts drawing. */
+  (function(){var ps=$('procSvg'),st=$('steps');if(!ps||!st)return;
+    var NS='http://www.w3.org/2000/svg',K=[].slice.call(ps.children),i=0,B0=420,SP=600,side,j,k;
+    function tag(e,c,d){e.classList.add(c);e.style.setProperty('--d',Math.round(d)+'ms')}
+    if(K.length<95)return;
+    ps.classList.add('pm');
+    for(side=0;side<2;side++)for(j=0;j<21;j++){var pa=K[i++],ci=K[i++],df=side?B0+SP*3+330:0,fx=(parseFloat(ci.getAttribute('cx'))-(side?1236:0))/204;
+      tag(pa,'fp',df+j*20);tag(ci,'fc',df+j*20+Math.max(0,Math.min(1,fx))*560)}
+    var first=null;
+    for(k=0;k<4;k++){var g=K[i++],w=document.createElementNS(NS,'g');ps.insertBefore(w,g);w.appendChild(g);if(!first)first=w;tag(w,'fi',B0+SP*k);
+      if(k<3)tag(K[i++],'fl',B0+SP*k+170);tag(K[i++],'ft',B0+SP*k+300)}
+    var dot=document.createElementNS(NS,'circle');dot.setAttribute('class','fdot');dot.setAttribute('r','3');dot.setAttribute('cx','327');dot.setAttribute('cy','120');ps.insertBefore(dot,first);
+    $$('.step',st).forEach(function(s,n){s.style.setProperty('--d',(B0+SP*n+480)+'ms')});
+    /* phone: the cards come one after another, each with its connector drawing down from the previous one */
+    rv('.step','rvs',{gap:260,g:'#steps'});
+    st._on=function(instant){ps.classList.add('go');st.classList.add('go');if(instant){ps.classList.add('nt');st.classList.add('nt')}};
+    st._g=st;st._gap=0;st._b=0;st._p=false;ioN.observe(st);pending.push(st)})();
+  var st0=$('steps');if(st0&&st0.parentNode)st0.parentNode.classList.add('mv');
   /* closing headline */
-  var ch=document.querySelector('#cband h2');if(ch){prep(ch);ch._on=function(){roll(ch)};ch.classList.add('rvn');io.observe(ch)}
+  var ch=document.querySelector('#cband h2');if(ch){prep(ch);ch._on=function(){roll(ch)};ch.classList.add('rvn');ioN.observe(ch)}
 
   /* ---------- underline draw ---------- */
   $$('.blog h4,.fcols a,.lnk,.all a,.nav > a.lk,.nav > a.r:not(.cta),.dd a,.tree .nm a').forEach(function(a){if(a.querySelector('.ul')||a.querySelector('svg'))return;a.innerHTML='<span class="ul">'+a.innerHTML+'</span>'});

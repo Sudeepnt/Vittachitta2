@@ -89,7 +89,8 @@
     if(k===3){box(g,-18,-18,0,36,36,6);[14,9,4].forEach(function(r){ring(g,0,0,6,r)})}}
   $$('svg.ic').forEach(function(s){icon(s,+s.dataset.ic)});
   var steps=$$('#steps .step');
-  if('IntersectionObserver' in window&&!reduce){new IntersectionObserver(function(es,o){es.forEach(function(e){if(e.isIntersecting){steps.forEach(function(s,i){setTimeout(function(){s.classList.add('in')},i*320)});o.disconnect()}})},{threshold:.4}).observe($('steps'))}else steps.forEach(function(s){s.classList.add('in')});
+  /* with motion on, motion.js sequences the steps as a flow; without it they simply show */
+  if(reduce||!('IntersectionObserver' in window))steps.forEach(function(s){s.classList.add('in')});
 
   /* ---------- results boxes ---------- */
   (function(){var sv=$('boxSvg'),S=100,H=74;
