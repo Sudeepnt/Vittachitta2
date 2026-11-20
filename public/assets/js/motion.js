@@ -64,7 +64,7 @@
   /* services: slab art; the three cards on the left are sequenced by scroll further down */
   rv('.svc-art','rv',{b:120});rv('.svc-m article','rvx',{gap:170,g:'#svcM'});
   var sa=document.querySelector('.svc-art'),sv0=$('svcSvg');
-  function drip(s){if(!s)return;s.classList.remove('dn','up');void s.getBoundingClientRect();s.classList.add('dn')}
+  function drip(s){if(!s)return;s.classList.remove('in','dn','up');void s.getBoundingClientRect();s.classList.add(s.id==='svcSvg'?'in':'dn')}
   if(sa)sa._on=function(){drip(sv0)};
   $$('.svc-m article').forEach(function(a){a._on=function(){drip(a.querySelector('svg'))}});
   /* founders: the three boxes stack up one after another */
@@ -77,6 +77,29 @@
   rv('.blog > a','rv',{gap:130,g:'.blog'});rv('.all','rv');
   /* the table: the window rises, then the tree is drawn root first, one row after another */
   rv('.win','rvwin');rv('.codew','rvwin');rv('.tree-root','rvx');rv('.tree li','rvx',{gap:220,g:'.tree'});
+  /* the table: once a row has been drawn, dots run down the trunk and along its branches, like data on a line (desktop only) */
+  (function(){var tree=document.querySelector('.tree'),ul=tree&&tree.querySelector('ul');if(!tree||!ul)return;
+    var wide=matchMedia('(min-width:901px)'),rows=$$('li',ul),layer=null,D=[],vis=false,raf=0,lastG=-1e9,G=null;
+    function build(){tree.style.position='relative';layer=document.createElement('div');layer.setAttribute('aria-hidden','true');layer.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden';tree.appendChild(layer);
+      function dot(o){var e=document.createElement('i');e.style.cssText='position:absolute;left:-2px;top:-2px;width:4px;height:4px;border-radius:50%;background:var(--fg);opacity:0;will-change:transform';layer.appendChild(e);o.e=e;D.push(o)}
+      for(var n=0;n<4;n++)dot({k:'t',ph:n/4,sp:70});
+      rows.forEach(function(r,i){for(var n=0;n<2;n++){dot({k:'b',r:i,ph:n/2+i*.13,sp:62});dot({k:'n',r:i,ph:n/2+i*.31,sp:78})}})}
+    function geo(){var tr=tree.getBoundingClientRect(),ur=ul.getBoundingClientRect(),g={tx:ur.left-tr.left+.5,t0:ur.top-tr.top,t1:ur.bottom-tr.top,rows:[]};
+      rows.forEach(function(r){var lr=r.getBoundingClientRect(),nm=r.querySelector('.nm'),nr=nm.getBoundingClientRect(),y=lr.top+lr.height/2-tr.top,tx=0,rg=document.createRange();
+        var w=document.createTreeWalker(nm,NodeFilter.SHOW_TEXT),t=null,x;while(x=w.nextNode())if(x.nodeValue.trim())t=x;
+        if(t){rg.selectNodeContents(t);tx=rg.getBoundingClientRect().right}else tx=nr.left;
+        g.rows.push({y:y,bx0:lr.left-tr.left,bx1:lr.left-tr.left+56,nx0:tx+14-tr.left,nx1:nr.right-tr.left,on:r.classList.contains('in')})});return g}
+    function fade(t){return t<.12?t/.12:t>.88?(1-t)/.12:1}
+    function frame(now){raf=0;if(!vis||!wide.matches)return;if(now-lastG>500){G=geo();lastG=now}var T=now/1000,i,o,t,L,x,y,ro,a=1;
+      for(i=0;i<D.length;i++){o=D[i];a=1;
+        if(o.k==='t'){L=G.t1-G.t0;t=(T*o.sp/L+o.ph)%1;x=G.tx;y=G.t0+L*t;a=G.rows[0].on?fade(t):0}
+        else{ro=G.rows[o.r];if(o.k==='b'){L=ro.bx1-ro.bx0;t=(T*o.sp/L+o.ph)%1;x=ro.bx0+L*t;y=ro.y}else{L=ro.nx1-ro.nx0;t=(T*o.sp/L+o.ph)%1;x=ro.nx0+L*t;y=ro.y}a=ro.on&&L>8?fade(t):0}
+        o.e.style.opacity=(a*.9).toFixed(2);o.e.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)'}
+      raf=requestAnimationFrame(frame)}
+    function kick(){if(vis&&wide.matches&&!raf)raf=requestAnimationFrame(frame)}
+    if(!('IntersectionObserver' in window))return;build();
+    new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis)lastG=-1e9;kick()},{rootMargin:'80px'}).observe(tree);
+    window.addEventListener('resize',function(){lastG=-1e9})})();
   /* questions: each group draws its frame, then its rows come in top to bottom */
   rv('.fg','rvw',{w:1,gap:160,g:'.pad'});
   $$('.fg').forEach(function(f){$$('details',f).forEach(function(d,k){d.style.setProperty('--k',k)})});
@@ -126,7 +149,7 @@
     rv('.step','rvs',{gap:260,g:'#steps'});
     /* once the funnels and lines have drawn, the diagram keeps flowing: hex characters stream into the left funnel,
        squares travel along every connector, squares scatter out of the right funnel */
-    var live=(function(){var CY=120,HEX='0123456789abcdef',L=[],R=[],C=[],run=0,vis=true,started=0,raf=0;
+    var live=(function(){var CY=120,HEX='0123456789abcdef',L=[],R=[],C=[],V=[],run=0,vis=true,started=0,raf=0;
       function mk(tag,at){var e=document.createElementNS(NS,tag);for(var a in at)e.setAttribute(a,at[a]);e.style.fill='var(--fg)';e.style.opacity='0';ps.insertBefore(e,first);return e}
       function build(){var i,k,n,y,a,e;
         for(i=0;i<21;i++){y=6+i*11.9;for(n=0;n<2;n++){
@@ -135,7 +158,9 @@
           e=mk('rect',{width:'5',height:'5',x:'-2.5',y:'-2.5'});
           R.push({e:e,y:y,x0:1440,x1:1236,ph:((i*29)%50)/50*.5+n*.5,sp:.24+((i*11)%7)*.012})}}
         for(k=0;k<3;k++){a=[327,589,851][k]+52;var b=[589,851,1113][k]-52;
-          for(n=0;n<4;n++){e=mk('rect',{width:'5',height:'5',x:'-2.5',y:'-2.5'});C.push({e:e,a:a,b:b,ph:n/4,sp:.34})}}}
+          for(n=0;n<4;n++){e=mk('rect',{width:'5',height:'5',x:'-2.5',y:'-2.5'});C.push({e:e,a:a,b:b,ph:n/4,sp:.34})}}
+        /* dots run down each icon's dotted line into its card */
+        [327,589,851,1113].forEach(function(x,k){for(n=0;n<2;n++){e=mk('circle',{r:'2.2'});V.push({e:e,x:x,ph:n/2+k*.17,sp:.42+k*.03})}})}
       function bz(o,t){var mx=o.x0+(o.x1-o.x0)*.55,cy2=CY+(o.y-CY)*.25,u=1-t;return [u*u*o.x0+2*u*t*mx+t*t*o.x1,u*u*o.y+2*u*t*cy2+t*t*CY]}
       function fade(t){return t<.12?t/.12:t>.88?(1-t)/.12:1}
       function frame(now){raf=0;if(!run||!vis)return;var T=now/1000,i,o,t,p,f;
@@ -145,6 +170,8 @@
           o.e.setAttribute('transform','translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+') scale('+(.45+.9*(1-t)).toFixed(2)+')');o.e.style.opacity=(f*.95).toFixed(2)}
         for(i=0;i<C.length;i++){o=C[i];t=(T*o.sp+o.ph)%1;
           o.e.setAttribute('transform','translate('+(o.a+(o.b-o.a)*t).toFixed(1)+' '+CY+')');o.e.style.opacity=fade(t).toFixed(2)}
+        for(i=0;i<V.length;i++){o=V[i];t=(T*o.sp+o.ph)%1;
+          o.e.setAttribute('transform','translate('+o.x+' '+(CY+44+(250-CY-44)*t).toFixed(1)+')');o.e.style.opacity=fade(t).toFixed(2)}
         raf=requestAnimationFrame(frame)}
       function kick(){if(run&&vis&&!raf)raf=requestAnimationFrame(frame)}
       if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;kick()},{rootMargin:'120px'}).observe(ps);

@@ -67,10 +67,11 @@ body.hide-mock .tagm{display:none}
 .hrow{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px 0;padding-top:48px;padding-bottom:clamp(40px,5vw,72px)}
 .hrow h2{max-width:14em}.hrow p{max-width:36em}
 @media (max-width:900px){.hrow{grid-template-columns:1fr;padding-top:40px}}
+@media (min-width:901px){#theletter{grid-template-columns:auto minmax(0,36em);column-gap:clamp(48px,6vw,96px);justify-content:start}}
 
 /* hero */
-.hero{display:flex;flex-direction:column;min-height:min(852px,calc(100vh - var(--nav)))}
-.hero-top{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px 56px;padding-top:48px;padding-bottom:44px;align-items:center}
+.hero{display:flex;flex-direction:column;min-height:calc(100vh - var(--nav))}
+.hero-top{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px 56px;padding-top:clamp(64px,6.5vw,96px);padding-bottom:clamp(64px,6.5vw,96px);align-items:center}
 .hero-top p{max-width:30em}
 .hero-b{flex:1;display:grid;grid-template-columns:2fr 1fr;min-height:420px;position:relative}
 .pix{position:relative;overflow:hidden;min-height:300px}
@@ -223,14 +224,19 @@ body.hide-mock .tagm{display:none}
 .codew .k{opacity:.6}.codew .c{background:var(--lilac)}
 .codew .cur{display:inline-block;width:1px;height:14px;background:var(--purple);vertical-align:-2px;animation:bl 1s steps(1) infinite}
 @keyframes bl{50%{opacity:0}}
-.soc{display:block;overflow:clip;width:min(600px,100%);height:280px;margin-top:0;border:1px solid color-mix(in srgb,var(--cream) 60%,transparent);border-bottom:0;margin-left:calc(-1 * var(--pad) + 124px);background:var(--purple);position:relative;z-index:1}
+.soc{display:block;overflow:clip;width:calc(100% + 2 * var(--pad) - 124px);height:280px;margin-top:0;border:1px solid color-mix(in srgb,var(--cream) 60%,transparent);margin-left:calc(-1 * var(--pad) + 124px);background:var(--purple);position:relative;z-index:1}
 .soc-g{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;width:100%;height:100%}
 .soc a{display:flex;align-items:center;justify-content:center;border-bottom:1px solid color-mix(in srgb,var(--cream) 60%,transparent);position:relative;background:var(--purple);min-width:0;min-height:0}
-.soc a:first-child{grid-row:span 2;border-right:1px solid color-mix(in srgb,var(--cream) 60%,transparent)}
-.soc svg{width:55%;max-width:170px;height:auto}.soc a:first-child svg{max-width:150px}
-.scat{position:absolute;left:0;top:0;bottom:0;width:124px;pointer-events:none}
+.soc a:first-child{grid-row:span 2;border-right:1px solid color-mix(in srgb,var(--cream) 60%,transparent);border-bottom:0}
+.soc a:nth-child(3){border-bottom:0}
+.soc svg{width:55%;max-width:170px;max-height:80%;height:auto}.soc a:first-child svg{max-width:150px}
+.scat{position:absolute;left:0;top:0;bottom:0;width:120px;pointer-events:none}
 .scat-v{position:absolute;left:0;bottom:0;width:120px;pointer-events:none}
 .scat-h{position:relative;height:120px;margin:40px calc(-1 * (var(--pad) + var(--safe-l))) 0;pointer-events:none}
+/* the box's left border carries on down to the bottom of the footer, same 1px line as the box */
+.scat::after,.cband::after{content:'';position:absolute;left:124px;width:1px;background:color-mix(in srgb,var(--cream) 60%,transparent);pointer-events:none}
+.scat::after{top:0;bottom:0}
+.cband::after{bottom:0;height:var(--vl,0px);z-index:1}
 .scat i,.scat-h i,.scat-v i,.mosaic i{position:absolute;width:28px;height:28px;background:var(--cream)}
 footer{position:relative;overflow:hidden;padding:56px calc(var(--pad) + var(--safe-r)) calc(72px + env(safe-area-inset-bottom,0px)) calc(124px + var(--pad) + var(--safe-l))}
 .fcols{display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:32px}
@@ -243,7 +249,7 @@ footer{position:relative;overflow:hidden;padding:56px calc(var(--pad) + var(--sa
 .fbot .lg button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0}
 @media (max-width:900px){
   .cband{grid-template-columns:1fr}.codew{margin:0 0 0 calc(16px + var(--safe-l));min-height:0}.codew pre{min-height:300px}
-  .soc{margin:40px 0 0 0;width:100%;height:220px}.cband .l{padding-bottom:0}.scat,.scat-h,.scat-v{display:none}
+  .soc{margin:40px 0 0 0;width:100%;height:220px}.cband .l{padding-bottom:0}.scat,.scat-h,.scat-v{display:none}.cband::after{display:none}
   footer{padding-left:calc(16px + var(--safe-l))}
   .fcols{grid-template-columns:1fr 1fr}.fcols > div:first-child{grid-column:1/-1}
   .fbot{flex-direction:column;align-items:flex-start;margin-top:56px}.fbot .bigwm{width:100%}.fbot .lg{text-align:left}
@@ -348,13 +354,10 @@ p > .wip:first-child{margin-left:0;margin-right:8px}
    Hovering the large box slides the whole grid across. Springy timing, fine pointers only. */
 :root{--spring:linear(0 0%,.033 3.45%,.115 6.9%,.226 10.34%,.348 13.79%,.471 17.24%,.586 20.69%,.689 24.14%,.778 27.59%,.852 31.03%,.911 34.48%,.956 37.93%,.989 41.38%,1.012 44.83%,1.026 48.28%,1.035 51.72%,1.038 55.17%,1.038 58.62%,1.036 62.07%,1.032 65.52%,1.027 68.97%,1.022 72.41%,1.018 75.86%,1.014 79.31%,1.01 82.76%,1.007 86.21%,1.004 89.66%,1.002 93.1%,1.001 96.55%,1 100%)}
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
-  .soc-g,.soc a{transition:transform .65s var(--spring)}
-  .soc a:nth-child(2){transform-origin:100% 0}
-  .soc a:nth-child(3){transform-origin:100% 100%}
-  .soc:has(a:nth-child(1):hover) .soc-g{transform:translateX(48px)}
-  .soc:has(a:nth-child(2):hover) a:nth-child(2),.soc:has(a:nth-child(3):hover) a:nth-child(3){transform:scale(1.15);z-index:10}
-  .soc:has(a:nth-child(2):hover) a:nth-child(1),.soc:has(a:nth-child(3):hover) a:nth-child(1){transform:translateX(-15%)}
-  .soc:has(a:nth-child(3):hover) a:nth-child(2){transform:translateY(-15%)}
-  .soc:has(a:nth-child(2):hover) a:nth-child(3){transform:translateY(15%)}
-  .soc.hint .soc-g{transform:translateX(48px);transition-duration:.9s;transition-timing-function:cubic-bezier(.34,1.56,.64,1)}
+  /* the frame and every divider stay joined: the grid tracks change size instead of the boxes sliding apart */
+  .soc-g{transition:grid-template-columns .65s var(--spring),grid-template-rows .65s var(--spring)}
+  .soc:has(a:nth-child(1):hover) .soc-g{grid-template-columns:2.4fr .6fr}
+  .soc:has(a:nth-child(2):hover) .soc-g{grid-template-columns:1.6fr 1.4fr;grid-template-rows:1.3fr .7fr}
+  .soc:has(a:nth-child(3):hover) .soc-g{grid-template-columns:1.6fr 1.4fr;grid-template-rows:.7fr 1.3fr}
+  .soc.hint .soc-g{grid-template-columns:2.25fr .75fr;transition-duration:.9s}
 }

@@ -27,11 +27,13 @@
     if(i===5){for(k=1;k<8;k++)line(g,[18,k*W/8,t],[W-18-(k%3)*30,k*W/8,t],c)}
   }
   function deco2(g,k,W,t,c){var x=(k%2)*W/2+14,y=Math.floor(k/2)*W/2+14,s=W/2-28;quad(g,[[x,y,t],[x+s,y,t],[x+s,y+s,t],[x,y+s,t]],c);ring(g,x+s/2,y+s/2,t,s*.2,c)}
-  function stack(sv,i,W,H){W=W||170;H=H||32;while(sv.firstChild)sv.removeChild(sv.firstChild);var o=-W/2;
-    var lo=el('g',{'class':'lo'},sv),tp=el('g',{'class':'tp'},sv);
+  function stack(sv,i,W,H,mode){W=W||170;H=H||32;var pv=sv._i;while(sv.firstChild)sv.removeChild(sv.firstChild);var o=-W/2;
+    var lo=el('g',{'class':'lo'},sv),tp=el('g',{'class':'tp'},sv),dir=mode==='in'?'in':(pv!=null&&pv!==i?(i>pv?'dn':'up'):'');
     for(var k=i;k>=1;k--){box(lo,o,o,-k*H,W,W,H)}
     box(tp,o,o,0,W,W,H,'fi');var g=el('g',{transform:'translate('+P(o,o,0).join(',')+')'},tp);deco(g,i,W,H,'di');
-    var pv=sv._i;sv._i=i;if(pv!=null&&pv!==i){sv.classList.remove('dn','up');void sv.getBoundingClientRect();sv.classList.add(i>pv?'dn':'up')}}
+    if(dir==='dn'||dir==='up'){var ov=el('g',{'class':'ov'}),oz=dir==='dn'?-H:0;sv.insertBefore(ov,dir==='dn'?tp:null);
+      box(ov,o,o,oz,W,W,H,'fi');deco(el('g',{transform:'translate('+P(o,o,oz).join(',')+')'},ov),pv,W,H,'di')}
+    sv._i=i;sv.classList.remove('in','dn','up');if(dir){void sv.getBoundingClientRect();sv.classList.add(dir)}}
   function single(sv,i,W,H,on){W=W||170;H=H||28;var o=-W/2;box(sv,o,o,0,W,W,H,on===false?'':'fi');var g=el('g',{transform:'translate('+P(o,o,0).join(',')+')'},sv);deco(g,i,W,H,on===false?'d':'di')}
 
   /* ---------- router ---------- */
@@ -61,7 +63,10 @@
 
   /* ---------- services ---------- */
   var svc=$('platforms'),acc=$$('#acc .acc-i'),svcSvg=$('svcSvg'),sIdx=-1,pinOn=false,pinH=0,STEP=520;
-  function setSvc(i){if(i===sIdx)return;sIdx=i;acc.forEach(function(a,j){a.classList.toggle('on',j===i)});stack(svcSvg,i)}
+  var accT;
+  function openAcc(){acc.forEach(function(a,j){a.classList.toggle('on',j===sIdx)})}
+  function setSvc(i){if(i===sIdx)return;var first=sIdx<0;sIdx=i;stack(svcSvg,i);clearTimeout(accT);
+    if(reduce||first)openAcc();else accT=setTimeout(openAcc,760)}
   function pinScroll(){if(!pinOn||cur!=='home')return;var r=svc.getBoundingClientRect(),p=(nav.offsetHeight-r.top)/(svc.offsetHeight-pinH);setSvc(Math.max(0,Math.min(2,Math.floor(p*3))))}
   acc.forEach(function(a,i){a.querySelector('.acc-h').addEventListener('click',function(){
     if(pinOn){var top=svc.getBoundingClientRect().top+window.scrollY-nav.offsetHeight;window.scrollTo({top:top+(i+.3)*STEP,behavior:reduce?'auto':'smooth'})}else setSvc(i)})});
@@ -131,14 +136,19 @@
   scatter($('scat'),30,.75);scatter($('scatH'),30,.5,true);
   /* left column beside the contact box: joins the row above to the footer column below */
   function placeV(){var v=$('scatV'),h=$('scatH'),cb=$('cband');if(!v||!h||!cb||!cb.offsetHeight||!h.offsetHeight)return;
+    var so=document.querySelector('.soc');if(so)cb.style.setProperty('--vl',Math.max(0,cb.offsetHeight-so.offsetTop-so.offsetHeight)+'px');
     var top=h.offsetTop+h.offsetHeight,H=Math.floor((cb.offsetHeight-top)/30)*30;if(H<30){v.style.height='0';v.innerHTML='';return}
     if(v._H===H&&v.firstChild)return;v._H=H;v.style.height=H+'px';scatter(v,30,.75)}
   placeV();var pvt;window.addEventListener('resize',function(){clearTimeout(pvt);pvt=setTimeout(placeV,300)});window.addEventListener('hashchange',function(){setTimeout(placeV,200)});window.addEventListener('load',function(){setTimeout(placeV,200)});
 
   /* ---------- code window ---------- */
   var codeTxt='type Company = {\n  name: string\n  founder: string\n  stage: Stage\n  booksCurrentAsOf?: Date\n  peopleToChase?: number\n}\n\nexport async function askVitthaChittha(company: Company) {\n  if (daysBehind(company.booksCurrentAsOf) > 0) {\n    console.warn("The numbers are older than the decision.")\n  }\n\n  if ((company.peopleToChase ?? 0) > 0) {\n    console.warn("That is a lot of follow-ups.")\n  }\n\n  return {\n    booksCurrentAsOf: "today",\n    conversations: 1,\n    followUps: 0,\n  }\n}';
-  (function(){var pre=$('code');if(reduce){pre.textContent=codeTxt;return}var n=0;function tick(){n+=2;pre.textContent=codeTxt.slice(0,n);var c=document.createElement('span');c.className='cur';pre.appendChild(c);if(n<codeTxt.length)setTimeout(tick,22);else setTimeout(function(){n=0;tick()},9000)}
-    if('IntersectionObserver' in window){new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();tick()}}).observe(pre)}else tick()})();
+  (function(){var pre=$('code');if(!pre)return;pre.textContent=codeTxt;if(reduce)return;
+    /* typed once, then left on screen; the text is already in place so the window is never empty */
+    var tn=document.createTextNode(''),c=document.createElement('span'),n=0;c.className='cur';
+    function tick(){n=Math.min(codeTxt.length,n+2);tn.data=codeTxt.slice(0,n);if(n<codeTxt.length)setTimeout(tick,22);else setTimeout(function(){c.remove()},2500)}
+    function start(){pre.textContent='';pre.appendChild(tn);pre.appendChild(c);tick()}
+    if('IntersectionObserver' in window){new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();start()}},{threshold:.2}).observe(pre)}else start()})();
 
   /* ---------- chips, forms ---------- */
   var cov=['Revenue','Receivables','Payables','Payroll','Bank accounts','Cards and expenses','GST','TDS','Income tax','Company-law filings','Cap table','ESOPs','Fundraising','Investor rights','Debt and credit lines','Grants and subsidies','Contracts','Subscriptions','Inventory','Fixed assets','Related parties','Foreign exchange','Insurance','Board resolutions','Budgets','Forecasts','Vendor terms','Customer terms','Refunds and disputes','Founder loans'];
