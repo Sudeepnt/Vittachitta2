@@ -153,7 +153,10 @@
     /* once the funnels and lines have drawn, the diagram keeps flowing: hex characters stream into the left funnel,
        squares travel along every connector, squares scatter out of the right funnel */
     var live=(function(){var CY=120,HEX='0123456789abcdef',L=[],R=[],C=[],V=[],run=0,vis=true,started=0,raf=0;
-      function mk(tag,at){var e=document.createElementNS(NS,tag);for(var a in at)e.setAttribute(a,at[a]);e.style.fill='var(--fg)';e.style.opacity='0';ps.insertBefore(e,first);return e}
+      /* the moving dots live in their own overlay, so the many static dotted lines underneath are painted once and never again */
+      var lv=document.createElementNS(NS,'svg');lv.setAttribute('viewBox',ps.getAttribute('viewBox'));lv.setAttribute('class','proc-live iso');lv.setAttribute('aria-hidden','true');
+      function place(){var a=ps.getBoundingClientRect(),b=ps.parentNode.getBoundingClientRect();lv.style.top=(a.top-b.top)+'px';lv.style.left=(a.left-b.left)+'px';lv.style.width=a.width+'px';lv.style.height=a.height+'px'}
+      function mk(tag,at){var e=document.createElementNS(NS,tag);for(var a in at)e.setAttribute(a,at[a]);e.style.fill='var(--fg)';e.style.opacity='0';lv.appendChild(e);return e}
       function build(){var i,k,n,y,a,e;
         for(i=0;i<21;i++){y=6+i*11.9;for(n=0;n<2;n++){
           e=mk('text',{'font-size':'15','text-anchor':'middle','dominant-baseline':'central','font-family':'"DM Mono",ui-monospace,monospace'});e.textContent=HEX[(i*5+n*7)%16];
@@ -166,7 +169,8 @@
         [327,589,851,1113].forEach(function(x,k){for(n=0;n<2;n++){e=mk('circle',{r:'2.2'});V.push({e:e,x:x,ph:n/2+k*.17,sp:.42+k*.03})}})}
       function bz(o,t){var mx=o.x0+(o.x1-o.x0)*.55,cy2=CY+(o.y-CY)*.25,u=1-t;return [u*u*o.x0+2*u*t*mx+t*t*o.x1,u*u*o.y+2*u*t*cy2+t*t*CY]}
       function fade(t){return t<.12?t/.12:t>.88?(1-t)/.12:1}
-      function frame(now){raf=0;if(!run||!vis)return;var T=now/1000,i,o,t,p,f;
+      var lastT=0;
+      function frame(now){raf=0;if(!run||!vis)return;if(now-lastT<30){raf=requestAnimationFrame(frame);return}lastT=now;var T=now/1000,i,o,t,p,f;
         for(i=0;i<L.length;i++){o=L[i];t=(T*o.sp+o.ph)%1;if(t<o.last&&o.last-t>.5)o.e.textContent=HEX[Math.floor(Math.random()*16)];o.last=t;p=bz(o,t);f=fade(t);
           o.e.setAttribute('transform','translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+') scale('+(1-.5*t).toFixed(2)+')');o.e.style.opacity=(f*.9).toFixed(2)}
         for(i=0;i<R.length;i++){o=R[i];t=1-((T*o.sp+o.ph)%1);p=bz(o,t);f=fade(1-t);
@@ -178,7 +182,7 @@
         raf=requestAnimationFrame(frame)}
       function kick(){if(run&&vis&&!raf)raf=requestAnimationFrame(frame)}
       if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;kick()},{rootMargin:'120px'}).observe(ps);
-      return function(delay){if(started)return;started=1;setTimeout(function(){build();ps.classList.add('live');run=1;kick()},delay)}})();
+      return function(delay){if(started)return;started=1;setTimeout(function(){build();ps.parentNode.style.position='relative';ps.parentNode.insertBefore(lv,ps.nextSibling);place();if(window.ResizeObserver)new ResizeObserver(place).observe(ps);else window.addEventListener('resize',place);ps.classList.add('live');run=1;kick()},delay)}})();
     st._on=function(instant){ps.classList.add('go');st.classList.add('go');if(instant){ps.classList.add('nt');st.classList.add('nt')}live(instant?250:B0+SP*3+1500)};
     st._g=st;st._gap=0;st._b=0;st._p=false;ioN.observe(st);pending.push(st)})();
   /* ---------- phone: the same flow, top to bottom ----------
@@ -187,21 +191,23 @@
     var NS='http://www.w3.org/2000/svg',HEX='0123456789abcdef',W=360,H=190,FH=170,CX=180,built=0,T=[],vis=0,raf=0,top,bot,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
     function E(tag,at,par){var e=document.createElementNS(NS,tag);for(var a in at)e.setAttribute(a,at[a]);if(par)par.appendChild(e);return e}
     function mkSvg(cls,label){var sv=E('svg',{'class':'proc-v iso '+cls,viewBox:'0 0 '+W+' '+H,'aria-hidden':'true'});return sv}
+    /* static dotted lines in one svg, the moving characters / squares in a second one on top (its own layer) */
+    function wrap(sv,cls){var d=document.createElement('div');d.className='pv-wrap '+cls;var lv=E('svg',{'class':'proc-v pv-live iso',viewBox:'0 0 '+W+' '+H,'aria-hidden':'true'});d.appendChild(sv);d.appendChild(lv);d._lv=lv;return d}
     /* point along a fan curve; fan 'in' narrows downwards to (CX,FH), fan 'out' widens downwards from (CX,20) */
     function pt(o,t){var u=1-t,x0=o.x,y0=o.y0,x1=CX,y1=o.y1,cx=CX+(o.x-CX)*.25,cy=y0+(y1-y0)*.55;
       return [u*u*x0+2*u*t*cx+t*t*x1,u*u*y0+2*u*t*cy+t*t*y1]}
-    function build(){if(built)return;built=1;top=mkSvg('pv-in');bot=mkSvg('pv-out');
+    function build(){if(built)return;built=1;top=mkSvg('pv-in');bot=mkSvg('pv-out');var topW=wrap(top,'pv-w-in'),botW=wrap(bot,'pv-w-out'),topL=topW._lv,botL=botW._lv;
       var i,n,x,e;
       for(i=0;i<21;i++){x=6+i*(W-12)/20;
         E('path',{d:'M'+x+',0 Q'+(CX+(x-CX)*.25)+','+(FH*.55)+' '+CX+','+FH,'class':'dt'},top);
         E('path',{d:'M'+CX+',20 Q'+(CX+(x-CX)*.25)+','+(20+(H-20)*.45)+' '+x+','+H,'class':'dt'},bot);
         for(n=0;n<2;n++){
-          e=E('text',{'font-size':'13','text-anchor':'middle','dominant-baseline':'central','font-family':'"DM Mono",ui-monospace,monospace'},top);e.textContent=HEX[(i*5+n*7)%16];e.style.fill='var(--fg)';
+          e=E('text',{'font-size':'13','text-anchor':'middle','dominant-baseline':'central','font-family':'"DM Mono",ui-monospace,monospace'},topL);e.textContent=HEX[(i*5+n*7)%16];e.style.fill='var(--fg)';
           T.push({e:e,x:x,y0:0,y1:FH,ph:((i*37)%50)/50*.5+n*.5,sp:.26+((i*13)%7)*.012,kind:0,last:2});
-          e=E('rect',{width:'5',height:'5',x:'-2.5',y:'-2.5'},bot);e.style.fill='var(--fg)';
+          e=E('rect',{width:'5',height:'5',x:'-2.5',y:'-2.5'},botL);e.style.fill='var(--fg)';
           T.push({e:e,x:x,y0:20,y1:H,ph:((i*29)%50)/50*.5+n*.5,sp:.24+((i*11)%7)*.012,kind:1})}}
       E('line',{x1:CX,y1:FH,x2:CX,y2:H,'class':'dt'},top);E('line',{x1:CX,y1:0,x2:CX,y2:20,'class':'dt'},bot);
-      st.parentNode.insertBefore(top,st);st.parentNode.insertBefore(bot,st.nextSibling);
+      st.parentNode.insertBefore(topW,st);st.parentNode.insertBefore(botW,st.nextSibling);
       if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.target===top||en.target===bot){en.target._v=en.isIntersecting}});vis=(top._v||bot._v)?1:0;kick()},{rootMargin:'160px'});io.observe(top);io.observe(bot)}else{vis=1}
       place(.35);kick()}
     function fade(t){return t<.12?t/.12:t>.88?(1-t)/.12:1}
@@ -214,12 +220,15 @@
           var q=1-t;var u=1-q,cx=CX+(o.x-CX)*.25,cy=o.y0+(o.y1-o.y0)*.45;
           p=[u*u*CX+2*u*q*cx+q*q*o.x,u*u*o.y0+2*u*q*cy+q*q*o.y1];
           o.e.setAttribute('transform','translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+') scale('+(.45+.9*q).toFixed(2)+')');o.e.style.opacity=(fade(q)*.95).toFixed(2)}}}
-    function frame(){raf=0;if(!vis||!mq.matches||document.hidden)return;place();raf=requestAnimationFrame(frame)}
+    var lastP=0;function frame(now){raf=0;if(!vis||!mq.matches||document.hidden)return;if(now-lastP<30){raf=requestAnimationFrame(frame);return}lastP=now;place();raf=requestAnimationFrame(frame)}
     function kick(){if(still||raf||!vis||!mq.matches)return;raf=requestAnimationFrame(frame)}
     document.addEventListener('visibilitychange',kick);
     function init(){if(mq.matches)build();kick()}
     if(mq.addEventListener)mq.addEventListener('change',init);else if(mq.addListener)mq.addListener(init);
     init()})();
+  /* once the hero has scrolled out of view its promoted layers are released, so the rest of the page scrolls with fewer big layers to manage */
+  (function(){var h=document.querySelector('.hero');if(!h||!('IntersectionObserver' in window))return;
+    new IntersectionObserver(function(es){h.classList.toggle('hero-off',!es[0].isIntersecting)},{rootMargin:'200px 0px'}).observe(h)})();
   var st0=$('steps');if(st0&&st0.parentNode)st0.parentNode.classList.add('mv');
   /* closing headline */
   var ch=document.querySelector('#cband h2');if(ch){prep(ch);ch._on=function(){roll(ch)};ch.classList.add('rvn');ioN.observe(ch)}
@@ -382,7 +391,7 @@
     function go(){if(!tm)tm=setTimeout(step,first||every)}
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis)go()},{rootMargin:'80px'}).observe(host);
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&vis)go()})}
-  drift($('scatH'),30,800,600);drift($('scat'),30,450,600);drift($('scatV'),30,450,900);
+  drift($('scatH'),30,800,600);drift($('scat'),30,450,600);drift($('scatV'),30,450,900);drift($('formPix'),28,700,500);
   /* footer boxes: a small nudge the first time they scroll into view, so people see they react */
   (function(){var soc=document.querySelector('.soc');if(!soc||!('IntersectionObserver' in window))return;
     var o=new IntersectionObserver(function(es){if(!es[0].isIntersecting)return;o.disconnect();

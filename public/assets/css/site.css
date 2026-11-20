@@ -348,7 +348,7 @@ p > .wip:first-child{margin-left:0;margin-right:8px}
 .inl input::placeholder{color:inherit;opacity:.7}.inl .btn{border:0}
 .mockbar{position:fixed;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--cream);color:var(--purple);border:1px solid var(--purple);padding:7px 10px;font:400 10px var(--f-m);letter-spacing:.06em;text-transform:uppercase}
 .mockbar label{display:flex;gap:8px;align-items:center;cursor:pointer}
-.scat i.dr,.scat-h i.dr,.scat-v i.dr{transition:left .9s cubic-bezier(.45,0,.2,1),top .9s cubic-bezier(.45,0,.2,1)}
+.scat i.dr,.scat-h i.dr,.scat-v i.dr,.mosaic i.dr{transition:left .9s cubic-bezier(.45,0,.2,1),top .9s cubic-bezier(.45,0,.2,1)}
 
 /* footer boxes react to the pointer: the hovered box grows from its corner and the others make room.
    Hovering the large box slides the whole grid across. Springy timing, fine pointers only. */
@@ -388,9 +388,10 @@ a,button,summary,label,input,select,textarea{touch-action:manipulation}
 .proc-v{display:none}
 @media (max-width:900px){
   .proc-v{display:block;width:100%;height:auto}
-  .proc-v.pv-in{margin-bottom:0}
+  .pv-wrap{position:relative}
+  .pv-live{position:absolute;left:0;top:0;pointer-events:none;will-change:transform}
   #process .steps{padding-bottom:0}
-  .proc-v.pv-out{margin-bottom:var(--sec)}
+  .pv-wrap.pv-w-out{margin-bottom:var(--sec)}
 }
 @media (max-width:900px){.fcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px 16px}.fcols h4{font-size:20px;overflow-wrap:anywhere}.fcols li a{overflow-wrap:anywhere}}
 @media (max-width:900px){#table{overflow-x:clip}}
@@ -399,3 +400,8 @@ a,button,summary,label,input,select,textarea{touch-action:manipulation}
 @media (max-width:900px){.win::before{display:none}}
 @media (max-width:900px){.win{margin-left:0}}
 @media (max-width:900px){.bx.split{grid-template-columns:minmax(0,1fr)}.bx.split > div{min-width:0}.inl{width:100%}.inl .btn{flex:none;padding-left:16px;padding-right:16px}}
+
+.proc-live{position:absolute;pointer-events:none;will-change:transform}
+/* contact page has no box above the footer, so the footer draws the horizontal line itself, from the vertical line to the right edge */
+html[data-view="contact"] footer::before{content:"";position:absolute;top:0;left:124px;right:0;height:1px;background:color-mix(in srgb,var(--cream) 60%,transparent);pointer-events:none}
+@media (max-width:900px){html[data-view="contact"] footer::before{left:90px}}

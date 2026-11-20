@@ -40,7 +40,7 @@
   var views=$$('.view'),cur='';
   function show(name){if(name==='operators')name='chittha';if(!views.some(function(v){return v.dataset.view===name}))name='home';
     views.forEach(function(v){v.classList.toggle('on',v.dataset.view===name)});
-    $('cband').style.display=name==='contact'?'none':'';cur=name;setTimeout(function(){layout();onScroll()},0)}
+    $('cband').style.display=name==='contact'?'none':'';cur=name;document.documentElement.setAttribute('data-view',name);setTimeout(function(){layout();onScroll()},0)}
   function route(){var h=location.hash;$('mmenu').classList.remove('open');$('burger').setAttribute('aria-expanded','false');
     if(!h||h==='#'||h==='#/'||h==='#top'){show('home');window.scrollTo(0,0);return}
     if(h.indexOf('#/')===0){show(h.slice(2));window.scrollTo(0,0);return}
@@ -77,7 +77,7 @@
       pinOn=wide&&internal&&!reduce;
       if(pinOn){pinH=svc.querySelector('.svc-pin').offsetHeight;svc.style.height=(pinH+3*STEP)+'px'}else if(wide){svc.classList.add('nopin')}
       if(sIdx<0)setSvc(0)}
-    if(cur==='contact')scatter($('formPix'),28,.42,true)}
+    if(cur==='contact'){var fp=$('formPix'),fk=fp.clientWidth+'x'+fp.clientHeight;if(fp.clientWidth&&fp._k!==fk){fp._k=fk;scatter(fp,28,.42,true)}}}
   var rz;window.addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(layout,200)});
 
   /* ---------- process diagram ---------- */

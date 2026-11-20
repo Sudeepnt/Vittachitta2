@@ -193,3 +193,5 @@ a:hover > .ul,a:focus-visible > .ul,.blog a:hover .ul,.nav > a:hover .ul{backgro
 
 /* process: the static circles on the funnels give way to the streaming characters and squares */
 #procSvg.pm.go.live .fc{opacity:0;transition:opacity .6s ease-out}
+
+.hero.hero-off .hero-top,.hero.hero-off .pix,.hero.hero-off .hero-exp,.hero.hero-off .parw{will-change:auto}
