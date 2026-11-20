@@ -249,8 +249,8 @@ footer{position:relative;overflow:hidden;padding:56px calc(var(--pad) + var(--sa
 .fbot .lg button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0}
 @media (max-width:900px){
   .cband{grid-template-columns:1fr}.codew{margin:0 0 0 calc(16px + var(--safe-l));min-height:0}.codew pre{min-height:300px}
-  .soc{margin:0 0 0 calc(-1 * var(--pad) + 90px);width:calc(100% + 2 * var(--pad) - 90px);height:220px}.cband .l{padding-bottom:0}.scat-h{height:90px;margin-top:32px}.scat-v{width:90px}.cband::after,.scat::after{left:90px}.codew{display:none}.scat{width:90px}.soc-g{grid-template-columns:1.25fr 1fr}
-  footer{padding-left:calc(90px + 20px + var(--safe-l))}
+  .soc{margin:0 0 0 calc(-1 * var(--pad) + var(--cell) * 3);width:calc(100% + 2 * var(--pad) - var(--cell) * 3);height:220px}.cband .l{padding-bottom:0}.scat-h{height:calc(var(--cell) * 5);margin-top:32px}.scat-v{width:calc(var(--cell) * 3)}.cband::after,.scat::after{left:calc(var(--cell) * 3)}.codew{display:none}.scat{width:calc(var(--cell) * 3)}.soc-g{grid-template-columns:1.25fr 1fr}
+  footer{padding-left:calc(var(--cell) * 3 + 20px + var(--safe-l))}
   .fcols{grid-template-columns:1fr 1fr}.fcols > div:first-child{grid-column:1/-1}
   .fbot{flex-direction:column;align-items:flex-start;margin-top:56px}.fbot .bigwm{width:100%}.fbot .lg{text-align:left}
 }
@@ -404,4 +404,8 @@ a,button,summary,label,input,select,textarea{touch-action:manipulation}
 .proc-live{position:absolute;pointer-events:none;will-change:transform}
 /* contact page has no box above the footer, so the footer draws the horizontal line itself, from the vertical line to the right edge */
 html[data-view="contact"] footer::before{content:"";position:absolute;top:0;left:124px;right:0;height:1px;background:color-mix(in srgb,var(--cream) 60%,transparent);pointer-events:none}
-@media (max-width:900px){html[data-view="contact"] footer::before{left:90px}}
+@media (max-width:900px){html[data-view="contact"] footer::before{left:calc(var(--cell) * 3)}}
+/* menu "Book a call": the same button as the hero's, whatever colour the bar behind the menu is using */
+.mmenu a.btn{display:flex;align-items:center;justify-content:center;width:100%;height:40px;padding:0 16px;margin-top:20px;font:400 13px/1 var(--f-b);border:1px solid var(--purple);background:var(--purple);color:var(--cream)}
+.mmenu a.btn:hover{background:transparent;color:var(--purple)}
+@media (max-width:900px){.formv .mosaic{min-height:0;height:150px;padding:0}}

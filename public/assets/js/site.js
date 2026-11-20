@@ -77,7 +77,7 @@
       pinOn=wide&&internal&&!reduce;
       if(pinOn){pinH=svc.querySelector('.svc-pin').offsetHeight;svc.style.height=(pinH+3*STEP)+'px'}else if(wide){svc.classList.add('nopin')}
       if(sIdx<0)setSvc(0)}
-    if(cur==='contact'){var fp=$('formPix'),fk=fp.clientWidth+'x'+fp.clientHeight;if(fp.clientWidth&&fp._k!==fk){fp._k=fk;scatter(fp,28,.42,true)}}}
+    if(cur==='contact'){var fp=$('formPix'),fc=cellPx(28),fk=fp.clientWidth+'x'+fp.clientHeight+'x'+fc;if(fp.clientWidth&&fp._k!==fk){fp._k=fk;scatter(fp,fc,.42,true)}}}
   var rz;window.addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(layout,200)});
 
   /* ---------- process diagram ---------- */
@@ -106,8 +106,13 @@
   /* ---------- mosaics, scatters ---------- */
   function mosaic(host,cell){var c=document.createElement('canvas');host.insertBefore(c,host.firstChild);var w=Math.max(8,Math.round((host.clientWidth||600)/(cell||26))),h=Math.max(6,Math.round((host.clientHeight||400)/(cell||26)));c.width=w;c.height=h;c.style.imageRendering='pixelated';var x=c.getContext('2d');
     for(var i=0;i<w;i++)for(var j=0;j<h;j++){var a=Math.random();x.fillStyle='rgba(255,255,228,'+(a<.5?0:(a-.5)*.3).toFixed(3)+')';x.fillRect(i,j,1,1)}}
-  function scatter(host,C,p,full){host.innerHTML='';var w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;var cols=Math.ceil(w/C),rows=Math.ceil(h/C),f=document.createDocumentFragment();
-    for(var c=0;c<cols;c++)for(var r=0;r<rows;r++){var q=full?p:p*(1-c/cols);if(Math.random()<q){var i=document.createElement('i');i.style.cssText='left:'+(c*C)+'px;top:'+(r*C)+'px;width:'+(C-2)+'px;height:'+(C-2)+'px';f.appendChild(i)}}host.appendChild(f)}
+  /* puzzle square size: on phones it follows the hero puzzle (screen width / 20), elsewhere the given size */
+  function cellPx(def){return window.matchMedia&&matchMedia('(max-width:900px)').matches?document.documentElement.clientWidth/20:def}
+  window.vcCell=cellPx;
+  function setCell(){document.documentElement.style.setProperty('--cell',cellPx(30)+'px')}
+  setCell();
+  function scatter(host,C,p,full){host.innerHTML='';var w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;var cols=Math.ceil(w/C-.1),rows=Math.ceil(h/C-.1),f=document.createDocumentFragment();
+    for(var c=0;c<cols;c++)for(var r=0;r<rows;r++){var q=full?p:p*(1-c/cols);if(Math.random()<q){var i=document.createElement('i');i.style.cssText='left:'+(c*C)+'px;top:'+(r*C)+'px;width:'+(C>25?C-2:C*.95)+'px;height:'+(C>25?C-2:C*.95)+'px';f.appendChild(i)}}host.appendChild(f)}
 
   /* ---------- sub-page art ---------- */
   var heroArt={};
@@ -133,15 +138,16 @@
     if(k===0){el('use',{href:'#mk',x:12,y:12,width:44,height:44,transform:M,style:'color:var(--bg)'},s)}
     if(k===1){var t=el('text',{x:34,y:48,'text-anchor':'middle',transform:M,'class':'ti',style:'font-size:40px;font-family:var(--f-b);font-weight:500'},s);t.textContent='in'}
     if(k===2){el('path',{d:'M12 20h44v28h-44z M12 20l22 16l22-16',transform:M,'class':'di',style:'stroke-width:1.6'},s)}});
-  scatter($('scat'),30,.75);scatter($('scatH'),30,.5,true);
+  scatter($('scat'),cellPx(30),.75);scatter($('scatH'),cellPx(30),.5,true);
   /* footer strip is 3 squares wide on phones, 4 on desktop: redraw when the layout switches */
-  if(window.matchMedia){var mqf=matchMedia('(max-width:900px)'),rsf=function(){scatter($('scat'),30,.75);scatter($('scatH'),30,.5,true);var v=$('scatV');if(v){v._H=0;v.innerHTML=''}setTimeout(placeV,50)};if(mqf.addEventListener)mqf.addEventListener('change',rsf);else if(mqf.addListener)mqf.addListener(rsf)}
+  var lastCell=cellPx(30);
+  if(window.matchMedia){var mqf=matchMedia('(max-width:900px)'),rsf=function(){setCell();lastCell=cellPx(30);scatter($('scat'),lastCell,.75);scatter($('scatH'),lastCell,.5,true);var v=$('scatV');if(v){v._H=0;v.innerHTML=''}setTimeout(placeV,50)};if(mqf.addEventListener)mqf.addEventListener('change',rsf);else if(mqf.addListener)mqf.addListener(rsf)}
   /* left column beside the contact box: joins the row above to the footer column below */
   function placeV(){var v=$('scatV'),h=$('scatH'),cb=$('cband');if(!v||!h||!cb||!cb.offsetHeight||!h.offsetHeight)return;
     var so=document.querySelector('.soc');if(so)cb.style.setProperty('--vl',Math.max(0,cb.offsetHeight-so.offsetTop-so.offsetHeight)+'px');
-    var top=h.offsetTop+h.offsetHeight,H=Math.floor((cb.offsetHeight-top)/30)*30;if(H<30){v.style.height='0';v.innerHTML='';return}
-    if(v._H===H&&v.firstChild)return;v._H=H;v.style.height=H+'px';scatter(v,30,.75)}
-  placeV();var pvt;window.addEventListener('resize',function(){clearTimeout(pvt);pvt=setTimeout(placeV,300)});window.addEventListener('hashchange',function(){setTimeout(placeV,200)});window.addEventListener('load',function(){setTimeout(placeV,200)});
+    var vc=cellPx(30),top=h.offsetTop+h.offsetHeight,H=Math.floor((cb.offsetHeight-top)/vc)*vc;if(H<30){v.style.height='0';v.innerHTML='';return}
+    if(v._H===H&&v._C===vc&&v.firstChild)return;v._H=H;v._C=vc;v.style.height=H+'px';scatter(v,vc,.75)}
+  placeV();var pvt;window.addEventListener('resize',function(){clearTimeout(pvt);pvt=setTimeout(function(){var nc=cellPx(30);if(nc!==lastCell){lastCell=nc;setCell();scatter($('scat'),nc,.75);scatter($('scatH'),nc,.5,true);var fp2=$('formPix');if(fp2)fp2._k=null;layout()}placeV()},300)});window.addEventListener('hashchange',function(){setTimeout(placeV,200)});window.addEventListener('load',function(){setTimeout(placeV,200)});
 
   /* ---------- code window ---------- */
   var codeTxt='type Company = {\n  name: string\n  founder: string\n  stage: Stage\n  booksCurrentAsOf?: Date\n  peopleToChase?: number\n}\n\nexport async function askVitthaChittha(company: Company) {\n  if (daysBehind(company.booksCurrentAsOf) > 0) {\n    console.warn("The numbers are older than the decision.")\n  }\n\n  if ((company.peopleToChase ?? 0) > 0) {\n    console.warn("That is a lot of follow-ups.")\n  }\n\n  return {\n    booksCurrentAsOf: "today",\n    conversations: 1,\n    followUps: 0,\n  }\n}';

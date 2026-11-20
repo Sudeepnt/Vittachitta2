@@ -370,12 +370,12 @@
   })();
   /* ---------- footer puzzles: the white blocks drift in every direction, one at a time, slowly ----------
      Each tick one block slides one cell up, down, left or right into free space, staying inside its frame. */
-  function drift(host,C,every,first){if(!host)return;
+  function drift(host,C0,every,first){if(!host)return;function K(){return window.vcCell?window.vcCell(C0):C0}
     var cells={},tiles=[],cols=0,rows=0,vis=false,tm=0,sig='';
     function key(c,r){return c+','+r}
     function sync(){var kids=[].slice.call(host.children).filter(function(k){return k.tagName==='I'}),s=kids.length+':'+(kids[0]?kids[0].style.left+kids[0].style.top:'');
-      if(s===sig&&tiles.length)return;sig=s;cells={};tiles=[];cols=Math.ceil(host.clientWidth/C);rows=Math.ceil(host.clientHeight/C);
-      kids.forEach(function(k){var t={e:k,c:Math.round(parseFloat(k.style.left)/C),r:Math.round(parseFloat(k.style.top)/C),busy:0};k.classList.add('dr');tiles.push(t);cells[key(t.c,t.r)]=t});void host.offsetWidth}
+      if(s===sig&&tiles.length)return;sig=s;cells={};tiles=[];cols=Math.ceil(host.clientWidth/K()-.1);rows=Math.ceil(host.clientHeight/K()-.1);
+      kids.forEach(function(k){var t={e:k,c:Math.round(parseFloat(k.style.left)/K()),r:Math.round(parseFloat(k.style.top)/K()),busy:0};k.classList.add('dr');tiles.push(t);cells[key(t.c,t.r)]=t});void host.offsetWidth}
     var DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
     function step(){tm=0;if(!vis||document.hidden){return}sync();
       var m=[],i,k,t,d,nc,nr;
@@ -385,7 +385,7 @@
           if(t.last&&t.last[0]===-d[0]&&t.last[1]===-d[1]&&Math.random()<.8)continue;
           m.push([t,d,nc,nr])}}
       if(m.length){var pick=m[Math.floor(Math.random()*m.length)];t=pick[0];t.busy=1;delete cells[key(t.c,t.r)];
-        t.c=pick[2];t.r=pick[3];t.last=pick[1];cells[key(t.c,t.r)]=t;t.e.style.left=(t.c*C)+'px';t.e.style.top=(t.r*C)+'px';
+        t.c=pick[2];t.r=pick[3];t.last=pick[1];cells[key(t.c,t.r)]=t;t.e.style.left=(t.c*K())+'px';t.e.style.top=(t.r*K())+'px';
         setTimeout(function(){t.busy=0},950)}
       tm=setTimeout(step,every)}
     function go(){if(!tm)tm=setTimeout(step,first||every)}
