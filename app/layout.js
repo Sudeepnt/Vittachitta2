@@ -11,7 +11,7 @@ export const viewport = {
   themeColor: '#1C0B26',
 };
 
-const ASSET_VERSION = '20261120b';
+const ASSET_VERSION = '20261120c';
 
 export default function RootLayout({ children }) {
   return (

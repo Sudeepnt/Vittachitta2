@@ -340,4 +340,4 @@ p > .wip:first-child{margin-left:0;margin-right:8px}
 .inl input::placeholder{color:inherit;opacity:.7}.inl .btn{border:0}
 .mockbar{position:fixed;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--cream);color:var(--purple);border:1px solid var(--purple);padding:7px 10px;font:400 10px var(--f-m);letter-spacing:.06em;text-transform:uppercase}
 .mockbar label{display:flex;gap:8px;align-items:center;cursor:pointer}
-.scat i.dr,.scat-h i.dr{transition:left 1s cubic-bezier(.45,0,.2,1),opacity .7s ease}
+.scat i.dr,.scat-h i.dr{transition:left 1s cubic-bezier(.45,0,.2,1),top 1s cubic-bezier(.45,0,.2,1)}

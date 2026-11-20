@@ -290,22 +290,25 @@
     if(mq.addEventListener)mq.addEventListener('change',refresh);
     build();
   })();
-  /* ---------- footer puzzles: the white blocks drift left to right, one at a time, slowly ----------
-     Each tick one block that has free space on its right slides one cell across. A block that reaches the right edge fades out
-     and a new one fades in at the left edge of the same row, so the pattern keeps flowing and never fills up or empties. */
+  /* ---------- footer puzzles: the white blocks drift in every direction, one at a time, slowly ----------
+     Each tick one block slides one cell up, down, left or right into free space, staying inside its frame. */
   function drift(host,C,every,first){if(!host)return;
     var cells={},tiles=[],cols=0,rows=0,vis=false,tm=0,sig='';
     function key(c,r){return c+','+r}
     function sync(){var kids=[].slice.call(host.children).filter(function(k){return k.tagName==='I'}),s=kids.length+':'+(kids[0]?kids[0].style.left+kids[0].style.top:'');
       if(s===sig&&tiles.length)return;sig=s;cells={};tiles=[];cols=Math.ceil(host.clientWidth/C);rows=Math.ceil(host.clientHeight/C);
       kids.forEach(function(k){var t={e:k,c:Math.round(parseFloat(k.style.left)/C),r:Math.round(parseFloat(k.style.top)/C),busy:0};k.classList.add('dr');tiles.push(t);cells[key(t.c,t.r)]=t});void host.offsetWidth}
+    var DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
     function step(){tm=0;if(!vis||document.hidden){return}sync();
-      var m=tiles.filter(function(t){return !t.busy&&(t.c>=cols-1||!cells[key(t.c+1,t.r)])});
-      if(m.length){var t=m[Math.floor(Math.random()*m.length)];t.busy=1;delete cells[key(t.c,t.r)];
-        if(t.c>=cols-1){t.e.style.opacity='0';
-          setTimeout(function(){if(cells[key(0,t.r)]){t.e.remove();tiles.splice(tiles.indexOf(t),1);return}
-            t.e.style.transition='none';t.c=0;t.e.style.left='0px';void t.e.offsetWidth;t.e.style.transition='';t.e.style.opacity='1';cells[key(0,t.r)]=t;setTimeout(function(){t.busy=0},700)},750)}
-        else{t.c++;cells[key(t.c,t.r)]=t;t.e.style.left=(t.c*C)+'px';setTimeout(function(){t.busy=0},1000)}}
+      var m=[],i,k,t,d,nc,nr;
+      for(i=0;i<tiles.length;i++){t=tiles[i];if(t.busy)continue;
+        for(k=0;k<4;k++){d=DIRS[k];nc=t.c+d[0];nr=t.r+d[1];
+          if(nc<0||nr<0||nc>=cols||nr>=rows||cells[key(nc,nr)])continue;
+          if(t.last&&t.last[0]===-d[0]&&t.last[1]===-d[1]&&Math.random()<.8)continue;
+          m.push([t,d,nc,nr])}}
+      if(m.length){var pick=m[Math.floor(Math.random()*m.length)];t=pick[0];t.busy=1;delete cells[key(t.c,t.r)];
+        t.c=pick[2];t.r=pick[3];t.last=pick[1];cells[key(t.c,t.r)]=t;t.e.style.left=(t.c*C)+'px';t.e.style.top=(t.r*C)+'px';
+        setTimeout(function(){t.busy=0},1000)}
       tm=setTimeout(step,every)}
     function go(){if(!tm)tm=setTimeout(step,first||every)}
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis)go()},{rootMargin:'80px'}).observe(host);
