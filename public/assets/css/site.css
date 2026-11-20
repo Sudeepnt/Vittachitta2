@@ -223,8 +223,9 @@ body.hide-mock .tagm{display:none}
 .codew .k{opacity:.6}.codew .c{background:var(--lilac)}
 .codew .cur{display:inline-block;width:1px;height:14px;background:var(--purple);vertical-align:-2px;animation:bl 1s steps(1) infinite}
 @keyframes bl{50%{opacity:0}}
-.soc{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;width:min(600px,100%);height:280px;margin-top:0;border:1px solid color-mix(in srgb,var(--cream) 60%,transparent);border-bottom:0;margin-left:calc(-1 * var(--pad) + 124px);background:var(--purple);position:relative;z-index:1}
-.soc a{display:flex;align-items:center;justify-content:center;border-bottom:1px solid color-mix(in srgb,var(--cream) 60%,transparent)}
+.soc{display:block;overflow:clip;width:min(600px,100%);height:280px;margin-top:0;border:1px solid color-mix(in srgb,var(--cream) 60%,transparent);border-bottom:0;margin-left:calc(-1 * var(--pad) + 124px);background:var(--purple);position:relative;z-index:1}
+.soc-g{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;width:100%;height:100%}
+.soc a{display:flex;align-items:center;justify-content:center;border-bottom:1px solid color-mix(in srgb,var(--cream) 60%,transparent);position:relative;background:var(--purple);min-width:0;min-height:0}
 .soc a:first-child{grid-row:span 2;border-right:1px solid color-mix(in srgb,var(--cream) 60%,transparent)}
 .soc svg{width:55%;max-width:170px;height:auto}.soc a:first-child svg{max-width:150px}
 .scat{position:absolute;left:0;top:0;bottom:0;width:124px;pointer-events:none}
@@ -342,3 +343,18 @@ p > .wip:first-child{margin-left:0;margin-right:8px}
 .mockbar{position:fixed;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--cream);color:var(--purple);border:1px solid var(--purple);padding:7px 10px;font:400 10px var(--f-m);letter-spacing:.06em;text-transform:uppercase}
 .mockbar label{display:flex;gap:8px;align-items:center;cursor:pointer}
 .scat i.dr,.scat-h i.dr,.scat-v i.dr{transition:left .9s cubic-bezier(.45,0,.2,1),top .9s cubic-bezier(.45,0,.2,1)}
+
+/* footer boxes react to the pointer: the hovered box grows from its corner and the others make room.
+   Hovering the large box slides the whole grid across. Springy timing, fine pointers only. */
+:root{--spring:linear(0 0%,.033 3.45%,.115 6.9%,.226 10.34%,.348 13.79%,.471 17.24%,.586 20.69%,.689 24.14%,.778 27.59%,.852 31.03%,.911 34.48%,.956 37.93%,.989 41.38%,1.012 44.83%,1.026 48.28%,1.035 51.72%,1.038 55.17%,1.038 58.62%,1.036 62.07%,1.032 65.52%,1.027 68.97%,1.022 72.41%,1.018 75.86%,1.014 79.31%,1.01 82.76%,1.007 86.21%,1.004 89.66%,1.002 93.1%,1.001 96.55%,1 100%)}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  .soc-g,.soc a{transition:transform .65s var(--spring)}
+  .soc a:nth-child(2){transform-origin:100% 0}
+  .soc a:nth-child(3){transform-origin:100% 100%}
+  .soc:has(a:nth-child(1):hover) .soc-g{transform:translateX(48px)}
+  .soc:has(a:nth-child(2):hover) a:nth-child(2),.soc:has(a:nth-child(3):hover) a:nth-child(3){transform:scale(1.15);z-index:10}
+  .soc:has(a:nth-child(2):hover) a:nth-child(1),.soc:has(a:nth-child(3):hover) a:nth-child(1){transform:translateX(-15%)}
+  .soc:has(a:nth-child(3):hover) a:nth-child(2){transform:translateY(-15%)}
+  .soc:has(a:nth-child(2):hover) a:nth-child(3){transform:translateY(15%)}
+  .soc.hint .soc-g{transform:translateX(48px);transition-duration:.9s;transition-timing-function:cubic-bezier(.34,1.56,.64,1)}
+}

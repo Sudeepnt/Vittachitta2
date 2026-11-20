@@ -314,4 +314,8 @@
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis)go()},{rootMargin:'80px'}).observe(host);
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&vis)go()})}
   drift($('scatH'),30,800,600);drift($('scat'),30,450,600);drift($('scatV'),30,450,900);
+  /* footer boxes: a small nudge the first time they scroll into view, so people see they react */
+  (function(){var soc=document.querySelector('.soc');if(!soc||!('IntersectionObserver' in window))return;
+    var o=new IntersectionObserver(function(es){if(!es[0].isIntersecting)return;o.disconnect();
+      setTimeout(function(){soc.classList.add('hint');setTimeout(function(){soc.classList.remove('hint')},650)},900)},{threshold:.7});o.observe(soc)})();
 })();
