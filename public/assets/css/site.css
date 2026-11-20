@@ -228,8 +228,9 @@ body.hide-mock .tagm{display:none}
 .soc a:first-child{grid-row:span 2;border-right:1px solid color-mix(in srgb,var(--cream) 60%,transparent)}
 .soc svg{width:55%;max-width:170px;height:auto}.soc a:first-child svg{max-width:150px}
 .scat{position:absolute;left:0;top:0;bottom:0;width:124px;pointer-events:none}
+.scat-v{position:absolute;left:0;bottom:0;width:120px;pointer-events:none}
 .scat-h{position:relative;height:120px;margin:40px calc(-1 * (var(--pad) + var(--safe-l))) 0;pointer-events:none}
-.scat i,.scat-h i,.mosaic i{position:absolute;width:28px;height:28px;background:var(--cream)}
+.scat i,.scat-h i,.scat-v i,.mosaic i{position:absolute;width:28px;height:28px;background:var(--cream)}
 footer{position:relative;overflow:hidden;padding:56px calc(var(--pad) + var(--safe-r)) calc(72px + env(safe-area-inset-bottom,0px)) calc(124px + var(--pad) + var(--safe-l))}
 .fcols{display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:32px}
 .fcols h4{font-size:22px;margin-bottom:14px}
@@ -241,7 +242,7 @@ footer{position:relative;overflow:hidden;padding:56px calc(var(--pad) + var(--sa
 .fbot .lg button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0}
 @media (max-width:900px){
   .cband{grid-template-columns:1fr}.codew{margin:0 0 0 calc(16px + var(--safe-l));min-height:0}.codew pre{min-height:300px}
-  .soc{margin:40px 0 0 0;width:100%;height:220px}.cband .l{padding-bottom:0}.scat,.scat-h{display:none}
+  .soc{margin:40px 0 0 0;width:100%;height:220px}.cband .l{padding-bottom:0}.scat,.scat-h,.scat-v{display:none}
   footer{padding-left:calc(16px + var(--safe-l))}
   .fcols{grid-template-columns:1fr 1fr}.fcols > div:first-child{grid-column:1/-1}
   .fbot{flex-direction:column;align-items:flex-start;margin-top:56px}.fbot .bigwm{width:100%}.fbot .lg{text-align:left}
@@ -340,4 +341,4 @@ p > .wip:first-child{margin-left:0;margin-right:8px}
 .inl input::placeholder{color:inherit;opacity:.7}.inl .btn{border:0}
 .mockbar{position:fixed;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--cream);color:var(--purple);border:1px solid var(--purple);padding:7px 10px;font:400 10px var(--f-m);letter-spacing:.06em;text-transform:uppercase}
 .mockbar label{display:flex;gap:8px;align-items:center;cursor:pointer}
-.scat i.dr,.scat-h i.dr{transition:left 1s cubic-bezier(.45,0,.2,1),top 1s cubic-bezier(.45,0,.2,1)}
+.scat i.dr,.scat-h i.dr,.scat-v i.dr{transition:left 1s cubic-bezier(.45,0,.2,1),top 1s cubic-bezier(.45,0,.2,1)}

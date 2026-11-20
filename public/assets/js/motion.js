@@ -313,5 +313,5 @@
     function go(){if(!tm)tm=setTimeout(step,first||every)}
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis)go()},{rootMargin:'80px'}).observe(host);
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&vis)go()})}
-  drift($('scatH'),30,900,1200);drift($('scat'),30,1100,2200);
+  drift($('scatH'),30,900,1200);drift($('scat'),30,1100,2200);drift($('scatV'),30,1000,1700);
 })();

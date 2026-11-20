@@ -129,6 +129,11 @@
     if(k===1){var t=el('text',{x:34,y:48,'text-anchor':'middle',transform:M,'class':'ti',style:'font-size:40px;font-family:var(--f-b);font-weight:500'},s);t.textContent='in'}
     if(k===2){el('path',{d:'M12 20h44v28h-44z M12 20l22 16l22-16',transform:M,'class':'di',style:'stroke-width:1.6'},s)}});
   scatter($('scat'),30,.75);scatter($('scatH'),30,.5,true);
+  /* left column beside the contact box: joins the row above to the footer column below */
+  function placeV(){var v=$('scatV'),h=$('scatH'),cb=$('cband');if(!v||!h||!cb||!cb.offsetHeight||!h.offsetHeight)return;
+    var top=h.offsetTop+h.offsetHeight,H=Math.floor((cb.offsetHeight-top)/30)*30;if(H<30){v.style.height='0';v.innerHTML='';return}
+    if(v._H===H&&v.firstChild)return;v._H=H;v.style.height=H+'px';scatter(v,30,.75)}
+  placeV();var pvt;window.addEventListener('resize',function(){clearTimeout(pvt);pvt=setTimeout(placeV,300)});window.addEventListener('hashchange',function(){setTimeout(placeV,200)});window.addEventListener('load',function(){setTimeout(placeV,200)});
 
   /* ---------- code window ---------- */
   var codeTxt='type Company = {\n  name: string\n  founder: string\n  stage: Stage\n  booksCurrentAsOf?: Date\n  peopleToChase?: number\n}\n\nexport async function askVitthaChittha(company: Company) {\n  if (daysBehind(company.booksCurrentAsOf) > 0) {\n    console.warn("The numbers are older than the decision.")\n  }\n\n  if ((company.peopleToChase ?? 0) > 0) {\n    console.warn("That is a lot of follow-ups.")\n  }\n\n  return {\n    booksCurrentAsOf: "today",\n    conversations: 1,\n    followUps: 0,\n  }\n}';
