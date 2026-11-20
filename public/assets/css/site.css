@@ -395,3 +395,4 @@ a,button,summary,label,input,select,textarea{touch-action:manipulation}
 @media (max-width:900px){.fcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px 16px}.fcols h4{font-size:20px;overflow-wrap:anywhere}.fcols li a{overflow-wrap:anywhere}}
 @media (max-width:900px){#table{overflow-x:clip}}
 @media (max-width:900px){.fcols{grid-template-columns:minmax(0,1fr);gap:32px}.fcols > div:first-child{grid-column:auto}.fcols li a{padding:8px 0}.fcols h4{font-size:22px;margin-bottom:8px}}
+@media (max-width:900px){.nav .logo{border-right:0}}
