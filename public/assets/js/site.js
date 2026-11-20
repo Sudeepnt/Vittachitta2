@@ -3,6 +3,8 @@
   function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
   function $(i){return document.getElementById(i)}
   function $$(s,r){return [].slice.call((r||document).querySelectorAll(s))}
+  /* text edited in the CMS for the script-drawn parts of the page (the server sets window.vcText); the defaults below are the original text */
+  var VT=window.vcText||{};function T(k,d){return typeof VT[k]==='string'?VT[k]:d}
   var CX=.866,SY=.5;function P(x,y,z){return [+((x-y)*CX).toFixed(1),+((x+y)*SY-z).toFixed(1)]}
   function poly(pts){return pts.map(function(p){return p.join(',')}).join(' ')}
   function box(g,x,y,z,w,d,h,c){c=c||'';
@@ -100,7 +102,7 @@
   /* ---------- results boxes ---------- */
   (function(){var sv=$('boxSvg'),S=100,H=74;
     function b(x,y,z,big,lab,lab2){box(sv,x,y,z,S,S,H);faceText(sv,x+S,y+S-12,z+H-34,big,26);faceText(sv,x+S,y+S-12,z+H-52,lab,9);if(lab2)faceText(sv,x+S,y+S-12,z+H-63,lab2,9)}
-    b(-50,-100,0,'0','follow-ups the','founder makes');b(-50,0,0,'1','conversation,','with us');b(-50,-50,H,'Day 0','in the books')})();
+    b(-50,-100,0,T('js.box0.big','0'),T('js.box0.l1','follow-ups the'),T('js.box0.l2','founder makes'));b(-50,0,0,T('js.box1.big','1'),T('js.box1.l1','conversation,'),T('js.box1.l2','with us'));b(-50,-50,H,T('js.box2.big','Day 0'),T('js.box2.l1','in the books'))})();
   (function(){var sv=$('envSvg'),W=120,D=80,H=8;box(sv,-W/2,-D/2,0,W,D,H,'fi');var t=H;line(sv,[-W/2,-D/2,t],[0,8,t],'di');line(sv,[W/2,-D/2,t],[0,8,t],'di');line(sv,[-W/2,D/2,t],[-12,0,t],'di');line(sv,[W/2,D/2,t],[12,0,t],'di')})();
 
   /* ---------- mosaics, scatters ---------- */
@@ -126,9 +128,9 @@
   /* ---------- blog images ---------- */
   $$('#blog .img').forEach(function(m){var i=+m.dataset.img;mosaic(m,30);var sv=el('svg',{'class':'iso',viewBox:i===0?'-210 -105 420 210':'-150 -75 300 150'},m);
     function cube(x,y,s,glyph){var g=el('g',{transform:'translate('+x+','+y+')'},sv);box(g,-s/2,-s/2,0,s,s,s,'fi');if(glyph)faceText(g,s/2,s/2-s*.28,s*.3,glyph,s*.42,'ti')}
-    if(i===0){cube(-96,14,72,'0');cube(64,30,88,'45')}
-    if(i===1){cube(-30,20,56,'?');cube(48,-4,40,'A')}if(i===2){cube(-44,22,48,'₹');cube(40,4,48,'₹')}
-    if(i===3){cube(-70,26,36,'1');cube(-8,18,44,'2');cube(62,10,52,'3')}if(i===4){cube(0,14,62,'10')}});
+    if(i===0){cube(-96,14,72,T('js.blog0.a','0'));cube(64,30,88,T('js.blog0.b','45'))}
+    if(i===1){cube(-30,20,56,T('js.blog1.a','?'));cube(48,-4,40,T('js.blog1.b','A'))}if(i===2){cube(-44,22,48,T('js.blog2.a','₹'));cube(40,4,48,T('js.blog2.b','₹'))}
+    if(i===3){cube(-70,26,36,T('js.blog3.a','1'));cube(-8,18,44,T('js.blog3.b','2'));cube(62,10,52,T('js.blog3.c','3'))}if(i===4){cube(0,14,62,T('js.blog4.a','10'))}});
 
   /* ---------- tree chips, social ---------- */
   $$('[data-chip]').forEach(function(s){var k=s.dataset.chip;if(k==='disc'){var c=P(0,0,8);el('path',{d:'M'+(c[0]-30)+','+c[1]+' v8 a30,17.3 0 0 0 60,0 v-8',style:'fill:var(--bg);stroke:var(--fg);stroke-width:1.1'},s);el('ellipse',{cx:c[0],cy:c[1],rx:30,ry:17.3,style:'fill:var(--bg);stroke:var(--fg);stroke-width:1.1'},s);for(var i=-3;i<=3;i++)line(s,[i*5,-16,8],[i*5,16,8])}
@@ -136,7 +138,7 @@
   $$('[data-soc]').forEach(function(s){var k=+s.dataset.soc;box(s,-34,-34,0,68,68,10,'fi');
     var o=P(-34,34,10),M='matrix(.866,-.5,.866,.5,'+o[0]+','+o[1]+')';
     if(k===0){el('use',{href:'#mk',x:12,y:12,width:44,height:44,transform:M,style:'color:var(--bg)'},s)}
-    if(k===1){var t=el('text',{x:34,y:48,'text-anchor':'middle',transform:M,'class':'ti',style:'font-size:40px;font-family:var(--f-b);font-weight:500'},s);t.textContent='in'}
+    if(k===1){var t=el('text',{x:34,y:48,'text-anchor':'middle',transform:M,'class':'ti',style:'font-size:40px;font-family:var(--f-b);font-weight:500'},s);t.textContent=T('js.social.in','in')}
     if(k===2){el('path',{d:'M12 20h44v28h-44z M12 20l22 16l22-16',transform:M,'class':'di',style:'stroke-width:1.6'},s)}});
   scatter($('scat'),cellPx(30),.75);scatter($('scatH'),cellPx(30),.5,true);
   /* footer strip is 3 squares wide on phones, 4 on desktop: redraw when the layout switches */
@@ -150,7 +152,7 @@
   placeV();var pvt;window.addEventListener('resize',function(){clearTimeout(pvt);pvt=setTimeout(function(){var nc=cellPx(30);if(nc!==lastCell){lastCell=nc;setCell();scatter($('scat'),nc,.75);scatter($('scatH'),nc,.5,true);var fp2=$('formPix');if(fp2)fp2._k=null;layout()}placeV()},300)});window.addEventListener('hashchange',function(){setTimeout(placeV,200)});window.addEventListener('load',function(){setTimeout(placeV,200)});
 
   /* ---------- code window ---------- */
-  var codeTxt='type Company = {\n  name: string\n  founder: string\n  stage: Stage\n  booksCurrentAsOf?: Date\n  peopleToChase?: number\n}\n\nexport async function askVitthaChittha(company: Company) {\n  if (daysBehind(company.booksCurrentAsOf) > 0) {\n    console.warn("The numbers are older than the decision.")\n  }\n\n  if ((company.peopleToChase ?? 0) > 0) {\n    console.warn("That is a lot of follow-ups.")\n  }\n\n  return {\n    booksCurrentAsOf: "today",\n    conversations: 1,\n    followUps: 0,\n  }\n}';
+  var codeTxt=T('js.code','type Company = {\n  name: string\n  founder: string\n  stage: Stage\n  booksCurrentAsOf?: Date\n  peopleToChase?: number\n}\n\nexport async function askVitthaChittha(company: Company) {\n  if (daysBehind(company.booksCurrentAsOf) > 0) {\n    console.warn("The numbers are older than the decision.")\n  }\n\n  if ((company.peopleToChase ?? 0) > 0) {\n    console.warn("That is a lot of follow-ups.")\n  }\n\n  return {\n    booksCurrentAsOf: "today",\n    conversations: 1,\n    followUps: 0,\n  }\n}');
   (function(){var pre=$('code');if(!pre)return;pre.textContent=codeTxt;if(reduce)return;
     /* typed once, then left on screen; the text is already in place so the window is never empty */
     var tn=document.createTextNode(''),c=document.createElement('span'),n=0;c.className='cur';
@@ -160,13 +162,14 @@
 
   /* ---------- chips, forms ---------- */
   var cov=['Revenue','Receivables','Payables','Payroll','Bank accounts','Cards and expenses','GST','TDS','Income tax','Company-law filings','Cap table','ESOPs','Fundraising','Investor rights','Debt and credit lines','Grants and subsidies','Contracts','Subscriptions','Inventory','Fixed assets','Related parties','Foreign exchange','Insurance','Board resolutions','Budgets','Forecasts','Vendor terms','Customer terms','Refunds and disputes','Founder loans'];
+  if(VT['js.cover']!=null)cov=VT['js.cover'].split('\n').map(function(x){return x.trim()}).filter(Boolean);
   var cv=$('cover');cov.forEach(function(c){var li=document.createElement('li');li.textContent=c;cv.appendChild(li)});
   if(!reduce){var ci=0;setInterval(function(){var ls=cv.children;[].forEach.call(ls,function(l){l.classList.remove('lit')});ls[(ci*7)%ls.length].classList.add('lit');ci++},900)}
   function wire(fid,did){var f=$(fid);f.addEventListener('submit',function(e){e.preventDefault();var bad=null;
     $$('[required]',f).forEach(function(x){var ok=x.value.trim()&&(x.type!=='email'||/.+@.+\..+/.test(x.value));x.style.outline=ok?'':'2px solid currentColor';if(!ok&&!bad)bad=x});
     if(bad){bad.focus();return}$(did).classList.add('show');f.querySelector('button[type=submit]').disabled=true})}
   wire('callForm','callDone');wire('waitForm','waitDone');wire('letterForm','letterDone');
-  function copy(e){var btn=e.currentTarget,t='info@vitthachittha.com';function ok(){btn.textContent='Copied: '+t}try{navigator.clipboard.writeText(t).then(ok,function(){btn.textContent=t})}catch(_){btn.textContent=t}}
+  function copy(e){var btn=e.currentTarget,t=($('mail')||{}).textContent||'info@vitthachittha.com';function ok(){btn.textContent=T('js.copied','Copied: ')+t}try{navigator.clipboard.writeText(t).then(ok,function(){btn.textContent=t})}catch(_){btn.textContent=t}}
   $('copyMail').addEventListener('click',copy);$('copyMail2').addEventListener('click',copy);
   $('showMock').addEventListener('change',function(e){document.body.classList.toggle('hide-mock',!e.target.checked)});
   $('yr').textContent=new Date().getFullYear();
