@@ -87,26 +87,22 @@
   rv('.fcols > div','rv',{gap:90,g:'.fcols'});rv('.fbot > *','rv',{gap:150,g:'.fbot'});
 
   /* ---------- services: the three cards on the left appear one after another as the pinned section scrolls ----------
-     Card 1 draws its frame in a line, then grows it open. Each later card arrives at the moment it opens: the previous card folds up
-     while the next one wipes in below it, its title, text and buttons following in turn. The frame grows to fit each arrival. */
+     Card 1 arrives as the section comes in, card 2 just before its turn to open, card 3 just before its turn.
+     The frame around them grows with each arrival; hidden cards keep their place so nothing below ever shifts. */
   (function(){var svc=plat,acc=$('acc'),it=$$('#acc .acc-i'),nav=$('nav'),pin=svc&&svc.querySelector('.svc-pin');if(!svc||!acc||!pin||it.length<3)return;
-    var mq=matchMedia('(min-width:901px)'),on=false,last=-1,tm=0,tm2=0,probe={_p:true};
+    var TH=[0,.22,.55],mq=matchMedia('(min-width:901px)'),on=false,last=-1,tm=0,probe={_p:true};
     function pinned(){return mq.matches&&svc.offsetParent!==null&&!!svc.style.height&&!svc.classList.contains('nopin')}
-    function cutFor(n){var c=1,k;for(k=n;k<3;k++)c+=it[k].offsetHeight;return c}
-    function clip(r,b){acc.style.clipPath='inset(-2px '+r+' '+b+' -2px)'}
-    function fit(n){clip('-2px',cutFor(n)+'px')}
+    function cutFor(n){var c=1,k;if(n<1)return acc.offsetHeight+2;for(k=n;k<3;k++)c+=it[k].offsetHeight;return c}
+    function fit(n){acc.style.clipPath='inset(-2px -2px '+cutFor(n)+'px -2px)'}
     function upd(){
       if(!pinned()){if(on){on=false;last=-1;acc.classList.remove('sqm');acc.style.clipPath='';it.forEach(function(a){a.classList.remove('sq','sqin');a.style.transitionDelay=''})}return}
-      if(!on){on=true;acc.classList.add('sqm');it.forEach(function(a){a.classList.add('sq')});clip('calc(100% + 2px)','calc(100% - 1px)')}
+      if(!on){on=true;acc.classList.add('sqm');it.forEach(function(a){a.classList.add('sq')})}
       var r=svc.getBoundingClientRect(),H=Math.max(1,svc.offsetHeight-pin.offsetHeight),p=(nav.offsetHeight-r.top)/H,n=0;
-      if(!gated(probe)&&r.top<window.innerHeight*.62)n=Math.max(0,Math.min(2,Math.floor(p*3)))+1;
-      if(n===last)return;var from=last;last=n;
-      it.forEach(function(a,k){a.classList.toggle('sqin',k<n);a.style.transitionDelay=''});
-      clearTimeout(tm);clearTimeout(tm2);
-      if(n===0){clip('calc(100% + 2px)','calc(100% - 1px)')}
-      else if(from<=0){clip('-2px','calc(100% - 1px)');tm2=setTimeout(function(){fit(last)},520)}
-      else fit(n);
-      tm=setTimeout(function(){if(last>0)fit(last)},900)}
+      if(!gated(probe)&&r.top<window.innerHeight*.62)n=1;
+      if(n&&p>=TH[1])n=2;if(n>1&&p>=TH[2])n=3;
+      if(n===last)return;var prev=Math.max(last,0);last=n;
+      it.forEach(function(a,k){a.classList.toggle('sqin',k<n);a.style.transitionDelay=(k<n&&k>=prev)?((k-prev)*170)+'ms':''});
+      fit(n);clearTimeout(tm);tm=setTimeout(function(){fit(last)},560)}
     window.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',function(){setTimeout(upd,260)});
     window.addEventListener('hashchange',function(){setTimeout(upd,120)});window.addEventListener('load',function(){setTimeout(upd,120)});
     setTimeout(upd,250);setTimeout(upd,1200)})();
