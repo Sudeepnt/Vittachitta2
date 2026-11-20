@@ -398,3 +398,4 @@ a,button,summary,label,input,select,textarea{touch-action:manipulation}
 @media (max-width:900px){.nav .logo{border-right:0}}
 @media (max-width:900px){.win::before{display:none}}
 @media (max-width:900px){.win{margin-left:0}}
+@media (max-width:900px){.bx.split{grid-template-columns:minmax(0,1fr)}.bx.split > div{min-width:0}.inl{width:100%}.inl .btn{flex:none;padding-left:16px;padding-right:16px}}

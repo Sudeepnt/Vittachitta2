@@ -98,6 +98,9 @@
       raf=requestAnimationFrame(frame)}
     function kick(){if(vis&&wide.matches&&!raf)raf=requestAnimationFrame(frame)}
     if(!('IntersectionObserver' in window))return;build();
+    /* the dots belong to the wide layout only: on a phone (or after narrowing the window) they are hidden, not left where they stopped */
+    function sync(){layer.style.display=wide.matches?'':'none';lastG=-1e9;kick()}
+    sync();if(wide.addEventListener)wide.addEventListener('change',sync);else if(wide.addListener)wide.addListener(sync);
     new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis)lastG=-1e9;kick()},{rootMargin:'80px'}).observe(tree);
     window.addEventListener('resize',function(){lastG=-1e9})})();
   /* questions: each group draws its frame, then its rows come in top to bottom */
