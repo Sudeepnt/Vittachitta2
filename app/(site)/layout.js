@@ -13,7 +13,7 @@ export const viewport = {
   themeColor: '#1C0B26',
 };
 
-const ASSET_VERSION = '20261121u';
+const ASSET_VERSION = '20261121v';
 
 export default async function RootLayout({ children }) {
   const { meta } = await getRuntimeContent();

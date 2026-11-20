@@ -24,7 +24,7 @@ export default async function DashboardPage() {
       sections={sections}
       entries={slim}
       defaultMeta={DEFAULT_CONTENT.meta}
-      initial={{ meta: row.content.meta, texts: row.content.texts || {} }}
+      initial={{ meta: row.content.meta, texts: row.content.texts || {}, socials: row.content.socials || [] }}
       updatedAt={row.updatedAt}
       hasBackup={row.hasBackup}
       canSave={row.configured}

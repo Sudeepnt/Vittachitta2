@@ -1,15 +1,14 @@
 /* VitthaChittha admin. Scoped to .adm so nothing here can touch the public site (which does not load this file). */
-:root { --cream: #FFFFE4; --purple: #1C0B26; }
+:root { --white: #fff; --black: #000; }
 html { color-scheme: light; }
 html[data-theme="dark"] { color-scheme: dark; }
 .adm {
-  --bg: var(--cream); --fg: var(--purple); --card: #FFFFF0; --line: color-mix(in srgb, var(--purple) 22%, transparent);
-  --soft: color-mix(in srgb, var(--purple) 62%, transparent); --tint: color-mix(in srgb, var(--purple) 7%, transparent);
-  --f-d: "Fraunces", Georgia, serif; --f-b: "DM Sans", "Helvetica Neue", Arial, sans-serif; --f-m: "DM Mono", ui-monospace, Menlo, monospace;
+  --bg: #fff; --fg: #000; --card: #fff; --line: rgba(0,0,0,.16); --soft: rgba(0,0,0,.6); --tint: #f3f3f3; --scrim: rgba(0,0,0,.45);
+  --f-d: "DM Sans", "Helvetica Neue", Arial, sans-serif; --f-b: "DM Sans", "Helvetica Neue", Arial, sans-serif; --f-m: "DM Mono", ui-monospace, Menlo, monospace;
   margin: 0; background: var(--bg); color: var(--fg); font-family: var(--f-b); font-size: 15px; line-height: 1.5;
   -webkit-text-size-adjust: 100%; min-height: 100vh;
 }
-html[data-theme="dark"] .adm { --bg: var(--purple); --fg: var(--cream); --card: #26122F; --line: color-mix(in srgb, var(--cream) 24%, transparent); --soft: color-mix(in srgb, var(--cream) 62%, transparent); --tint: color-mix(in srgb, var(--cream) 8%, transparent); }
+html[data-theme="dark"] .adm { --bg: #000; --fg: #fff; --card: #0b0b0b; --line: rgba(255,255,255,.22); --soft: rgba(255,255,255,.62); --tint: #171717; --scrim: rgba(0,0,0,.7); }
 .adm *, .adm *::before, .adm *::after { box-sizing: border-box; }
 .adm .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .adm .mono { font-family: var(--f-m); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
@@ -31,7 +30,7 @@ html[data-theme="dark"] .adm { --bg: var(--purple); --fg: var(--cream); --card: 
 /* login */
 .adm .login { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
 .adm .login-card { width: min(400px, 100%); border: 1px solid var(--fg); background: var(--card); padding: 32px 28px; display: grid; gap: 14px; }
-.adm .login-card h1 { font-family: var(--f-d); font-weight: 400; font-size: 34px; line-height: 1.1; margin: 0; }
+.adm .login-card h1 { font-family: var(--f-d); font-weight: 600; font-size: 30px; line-height: 1.1; margin: 0; }
 .adm .login-card p { margin: 0 0 4px; color: var(--soft); }
 .adm .login-card input { height: 44px; padding: 0 12px; background: var(--bg); border: 1px solid var(--fg); font-size: 16px; }
 .adm .err { border: 1px solid var(--fg); padding: 10px 12px; font-size: 14px; background: var(--tint); }
@@ -39,7 +38,7 @@ html[data-theme="dark"] .adm { --bg: var(--purple); --fg: var(--cream); --card: 
 /* shell */
 .adm .top { position: sticky; top: 0; z-index: 30; background: var(--bg); border-bottom: 1px solid var(--fg); }
 .adm .top-in { display: flex; align-items: center; gap: 14px; padding: 12px 24px; flex-wrap: wrap; }
-.adm .brand { font-family: var(--f-d); font-size: 22px; line-height: 1; margin-right: auto; order: 1; display: flex; align-items: baseline; gap: 10px; }
+.adm .brand { font-family: var(--f-d); font-weight: 600; font-size: 20px; line-height: 1; margin-right: auto; order: 1; display: flex; align-items: baseline; gap: 10px; }
 .adm .dirty { font-family: var(--f-m); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--fg); padding: 3px 8px; display: inline-flex; gap: 6px; align-items: center; }
 .adm .dirty::before { content: ""; width: 7px; height: 7px; background: var(--fg); }
 .adm .acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; order: 2; }
@@ -57,7 +56,7 @@ html[data-theme="dark"] .adm { --bg: var(--purple); --fg: var(--cream); --card: 
 .adm .find { flex: 1 1 260px; height: 40px; padding: 0 12px; background: var(--card); border: 1px solid var(--fg); font-size: 15px; }
 .adm .card { border: 1px solid var(--fg); background: var(--card); margin-bottom: 20px; }
 .adm .card > header { padding: 14px 18px; border-bottom: 1px solid var(--fg); display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
-.adm .card > header h2 { margin: 0; font-family: var(--f-d); font-weight: 400; font-size: 22px; line-height: 1.2; }
+.adm .card > header h2 { margin: 0; font-family: var(--f-d); font-weight: 600; font-size: 18px; line-height: 1.2; }
 .adm .card > header .mono { margin-left: auto; }
 .adm .card > header .hint { flex-basis: 100%; color: var(--soft); font-size: 13px; margin-top: -4px; }
 .adm .grp { padding: 10px 18px; background: var(--tint); border-bottom: 1px solid var(--line); border-top: 1px solid var(--line); font-family: var(--f-m); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--soft); }
@@ -77,9 +76,9 @@ html[data-theme="dark"] .adm { --bg: var(--purple); --fg: var(--cream); --card: 
 .adm .empty { padding: 40px 20px; text-align: center; color: var(--soft); border: 1px dashed var(--line); }
 
 /* confirm + toast */
-.adm .scrim { position: fixed; inset: 0; z-index: 100; background: color-mix(in srgb, var(--purple) 55%, transparent); display: grid; place-items: center; padding: 20px; }
+.adm .scrim { position: fixed; inset: 0; z-index: 100; background: var(--scrim); display: grid; place-items: center; padding: 20px; }
 .adm .dlg { width: min(440px, 100%); background: var(--card); border: 1px solid var(--fg); padding: 24px; box-shadow: 8px 8px 0 var(--fg); }
-.adm .dlg h3 { font-family: var(--f-d); font-weight: 400; font-size: 24px; line-height: 1.2; margin: 0 0 8px; }
+.adm .dlg h3 { font-family: var(--f-d); font-weight: 600; font-size: 20px; line-height: 1.2; margin: 0 0 8px; }
 .adm .dlg p { margin: 0 0 20px; color: var(--soft); }
 .adm .dlg .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .adm .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 120; background: var(--fg); color: var(--bg); padding: 12px 18px; max-width: calc(100vw - 32px); font-size: 14px; }
@@ -87,7 +86,7 @@ html[data-theme="dark"] .adm { --bg: var(--purple); --fg: var(--cream); --card: 
 
 @media (max-width: 700px) {
   .adm .top-in { padding: 10px 14px; gap: 10px; }
-  .adm .brand { font-size: 19px; flex: 1 1 0; min-width: 0; flex-wrap: wrap; row-gap: 6px; }
+  .adm .brand { font-size: 18px; flex: 1 1 0; min-width: 0; flex-wrap: wrap; row-gap: 6px; }
   .adm .save { order: 2; }
   .adm .acts { order: 3; width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; scrollbar-width: none; }
   .adm .acts::-webkit-scrollbar { display: none; }
@@ -102,3 +101,12 @@ html[data-theme="dark"] .adm { --bg: var(--purple); --fg: var(--cream); --card: 
   .adm .dlg .row .btn { flex: 1 1 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .adm * { transition: none !important; } }
+
+/* social media links */
+.adm .field.social .two { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+.adm .field.social.bad input { border-color: var(--fg); }
+.adm .rowbtns { margin-left: auto; display: flex; gap: 6px; }
+.adm .mini { background: transparent; border: 1px solid var(--fg); height: 28px; min-width: 28px; padding: 0 8px; cursor: pointer; font-size: 13px; }
+.adm .mini:hover:not(:disabled) { background: var(--fg); color: var(--bg); }
+.adm .mini:disabled { opacity: .3; cursor: not-allowed; }
+@media (max-width: 700px) { .adm .field.social .two { grid-template-columns: 1fr; } }

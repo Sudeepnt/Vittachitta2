@@ -57,10 +57,47 @@ function ConfirmHost({ dlg }) {
   );
 }
 
+const SOCIAL_SUGGESTIONS = ['LinkedIn', 'Instagram', 'X', 'YouTube', 'Facebook', 'GitHub', 'WhatsApp', 'Threads', 'Telegram', 'Medium'];
+
+function SocialCard({ list, onChange }) {
+  const set = (i, patch) => onChange(list.map((x, j) => (j === i ? { ...x, ...patch } : x)));
+  const move = (i, d) => { const n = list.slice(); const [x] = n.splice(i, 1); n.splice(i + d, 0, x); onChange(n); };
+  const bad = (x) => (x.name.trim() || x.url.trim()) && !(x.name.trim() && /^https?:\/\/[^\s"<>]+$/i.test(x.url.trim()));
+  return (
+    <section className="card">
+      <header>
+        <h2>Social media links</h2>
+        <span className="mono">{list.length} added</span>
+        <span className="hint">Shown in the top bar, as tiles above the footer (the first 4) and in the footer, in this order. Nothing shows on the website until you add one.</span>
+      </header>
+      <datalist id="social-names">{SOCIAL_SUGGESTIONS.map((n) => <option key={n} value={n} />)}</datalist>
+      {list.length === 0 && <div className="field"><div className="note">No social media links yet. The website shows none.</div></div>}
+      {list.map((x, i) => (
+        <div className={'field social' + (bad(x) ? ' bad' : '')} key={i}>
+          <div className="lb"><label htmlFor={'sn' + i}>Social media {i + 1}</label>
+            <span className="rowbtns">
+              <button type="button" className="mini" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">↑</button>
+              <button type="button" className="mini" onClick={() => move(i, 1)} disabled={i === list.length - 1} aria-label="Move down">↓</button>
+              <button type="button" className="mini" onClick={() => onChange(list.filter((_, j) => j !== i))}>Remove</button>
+            </span>
+          </div>
+          <div className="two">
+            <input id={'sn' + i} list="social-names" type="text" placeholder="Name, for example LinkedIn" value={x.name} maxLength={40} onChange={(e) => set(i, { name: e.target.value })} aria-label={'Name of social media ' + (i + 1)} />
+            <input type="url" inputMode="url" placeholder="https://www.linkedin.com/company/…" value={x.url} onChange={(e) => set(i, { url: e.target.value })} aria-label={'Web address of social media ' + (i + 1)} />
+          </div>
+          {bad(x) && <div className="note">Needs a name and a full web address starting with https://</div>}
+        </div>
+      ))}
+      <div className="field"><button type="button" className="btn o sm" onClick={() => onChange([...list, { name: '', url: '' }])} disabled={list.length >= 30}>+ Add social media</button></div>
+    </section>
+  );
+}
+
 // ---------- the dashboard ----------
 export default function Dashboard({ tabs, sections, entries, defaultMeta, initial, updatedAt, hasBackup: hb, canSave, loadError, unused }) {
   const [texts, setTexts] = useState(initial.texts);
   const [meta, setMeta] = useState({ ...defaultMeta, ...initial.meta });
+  const [socials, setSocials] = useState(initial.socials);
   const [baseAt, setBaseAt] = useState(updatedAt);
   const [hasBackup, setHasBackup] = useState(hb);
   const [tab, setTab] = useState(tabs[0].id);
@@ -73,9 +110,9 @@ export default function Dashboard({ tabs, sections, entries, defaultMeta, initia
   const leaving = useRef(false);
 
   const metaOver = useCallback((m) => Object.fromEntries(Object.entries(m).filter(([k, v]) => v !== defaultMeta[k])), [defaultMeta]);
-  const norm = useCallback((m, t) => JSON.stringify({ meta: metaOver(m), texts: Object.fromEntries(Object.keys(t).sort().map((k) => [k, t[k]])) }), [metaOver]);
-  const [savedSnap, setSavedSnap] = useState(() => norm({ ...defaultMeta, ...initial.meta }, initial.texts));
-  const dirty = norm(meta, texts) !== savedSnap;
+  const norm = useCallback((m, t, so) => JSON.stringify({ meta: metaOver(m), texts: Object.fromEntries(Object.keys(t).sort().map((k) => [k, t[k]])), socials: so.filter((x) => x.name.trim() || x.url.trim()) }), [metaOver]);
+  const [savedSnap, setSavedSnap] = useState(() => norm({ ...defaultMeta, ...initial.meta }, initial.texts, initial.socials));
+  const dirty = norm(meta, texts, socials) !== savedSnap;
 
   useEffect(() => {
     const t = document.documentElement.getAttribute('data-theme');
@@ -111,9 +148,10 @@ export default function Dashboard({ tabs, sections, entries, defaultMeta, initia
   const editedByTab = useMemo(() => {
     const c = {};
     for (const k of Object.keys(texts)) { const e = byKey.get(k); if (e) c[e.tab] = (c[e.tab] || 0) + 1; }
-    for (const f of META_FIELDS) if (meta[f.k] !== defaultMeta[f.k]) c.site = (c.site || 0) + 1;
+    for (const f of META_FIELDS) if (meta[f.k] !== defaultMeta[f.k]) c.meta = (c.meta || 0) + 1;
+    if (socials.length) c.site = (c.site || 0) + socials.length;
     return c;
-  }, [texts, meta, byKey, defaultMeta]);
+  }, [texts, meta, socials, byKey, defaultMeta]);
 
   const needle = q.trim().toLowerCase();
   const blocks = useMemo(() => {
@@ -125,18 +163,21 @@ export default function Dashboard({ tabs, sections, entries, defaultMeta, initia
     }).filter((b) => b.list.length);
   }, [sections, entries, tab, needle, texts]);
 
-  const showMeta = tab === 'site' && (!needle || META_FIELDS.some((f) => (f.label + meta[f.k]).toLowerCase().includes(needle)));
+  const showMeta = tab === 'meta' && (!needle || META_FIELDS.some((f) => (f.label + meta[f.k]).toLowerCase().includes(needle)));
 
   // ---------- actions ----------
-  const payload = () => ({ meta: metaOver(meta), texts });
+  const cleanSocials = () => socials.filter((x) => x.name.trim() || x.url.trim()).map((x) => ({ name: x.name.trim(), url: x.url.trim() }));
+  const socialsOk = () => cleanSocials().every((x) => x.name && /^https?:\/\/[^\s"<>]+$/i.test(x.url));
+  const payload = () => ({ meta: metaOver(meta), texts, socials: cleanSocials() });
 
   async function save() {
     if (busy) return false;
     if (!canSave) { say('Saving is not available here: Supabase is not set up.', true); return false; }
+    if (!socialsOk()) { say('A social media link is incomplete. Each one needs a name and a full web address starting with https://', true); setTab('site'); return false; }
     setBusy(true);
     try {
       const r = await saveSiteContent(payload(), baseAt);
-      if (r.ok) { setBaseAt(r.updatedAt); setHasBackup(true); setSavedSnap(norm(meta, texts)); say('Saved. The website now shows your changes.'); setBusy(false); return true; }
+      if (r.ok) { setBaseAt(r.updatedAt); setHasBackup(true); setSavedSnap(norm(meta, texts, cleanSocials())); say('Saved. The website now shows your changes.'); setBusy(false); return true; }
       say(r.error, true);
     } catch { say('Could not save. Check your connection and try again.', true); }
     setBusy(false);
@@ -146,8 +187,9 @@ export default function Dashboard({ tabs, sections, entries, defaultMeta, initia
   function load(content) {
     const m = { ...defaultMeta, ...(content.meta || {}) };
     const t = content.texts || {};
-    setMeta(m); setTexts(t);
-    return norm(m, t);
+    const so = Array.isArray(content.socials) ? content.socials : [];
+    setMeta(m); setTexts(t); setSocials(so);
+    return norm(m, t, so);
   }
 
   async function restore() {
@@ -186,8 +228,9 @@ export default function Dashboard({ tabs, sections, entries, defaultMeta, initia
     try {
       const j = JSON.parse(await f.text());
       const okTexts = j && typeof j === 'object' && j.texts && typeof j.texts === 'object' && !Array.isArray(j.texts) && Object.values(j.texts).every((v) => typeof v === 'string');
+      const okSoc = j.socials === undefined || (Array.isArray(j.socials) && j.socials.every((x) => x && typeof x.name === 'string' && typeof x.url === 'string'));
       const okMeta = j.meta === undefined || (j.meta && typeof j.meta === 'object' && !Array.isArray(j.meta) && Object.values(j.meta).every((v) => typeof v === 'string'));
-      if (!okTexts || !okMeta) throw new Error('shape');
+      if (!okTexts || !okMeta || !okSoc) throw new Error('shape');
       load(j);
       say('Imported. Press Save to publish it.');
     } catch { say('That file is not a VitthaChittha content export. Nothing was changed.', true); }
@@ -251,10 +294,12 @@ export default function Dashboard({ tabs, sections, entries, defaultMeta, initia
           </section>
         )}
 
+        {tab === 'site' && !needle && !blocks.some((b) => b.s.id === 'nav') && <SocialCard list={socials} onChange={setSocials} />}
         {blocks.map(({ s, list }) => {
           let last = null;
           return (
-            <section className="card" key={s.id}>
+            <Fragment key={s.id}>
+            <section className="card">
               <header>
                 <h2>{s.label}</h2>
                 <span className="mono">{list.length} {list.length === 1 ? 'text' : 'texts'}</span>
@@ -273,10 +318,12 @@ export default function Dashboard({ tabs, sections, entries, defaultMeta, initia
                 );
               })}
             </section>
+            {tab === 'site' && s.id === 'nav' && !needle && <SocialCard list={socials} onChange={setSocials} />}
+            </Fragment>
           );
         })}
 
-        {!blocks.length && !showMeta && <div className="empty">No text matches &ldquo;{q}&rdquo;.</div>}
+        {!blocks.length && !showMeta && !(tab === 'site' && !needle) && tab !== 'meta' && <div className="empty">No text matches &ldquo;{q}&rdquo;.</div>}
       </main>
 
       <ConfirmHost dlg={dlg} />

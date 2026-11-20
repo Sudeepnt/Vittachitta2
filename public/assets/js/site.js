@@ -135,11 +135,11 @@
   /* ---------- tree chips, social ---------- */
   $$('[data-chip]').forEach(function(s){var k=s.dataset.chip;if(k==='disc'){var c=P(0,0,8);el('path',{d:'M'+(c[0]-30)+','+c[1]+' v8 a30,17.3 0 0 0 60,0 v-8',style:'fill:var(--bg);stroke:var(--fg);stroke-width:1.1'},s);el('ellipse',{cx:c[0],cy:c[1],rx:30,ry:17.3,style:'fill:var(--bg);stroke:var(--fg);stroke-width:1.1'},s);for(var i=-3;i<=3;i++)line(s,[i*5,-16,8],[i*5,16,8])}
     else{k=+k;box(s,-16,-16,0,32,32,5);if(k===0){[-8,0,8].forEach(function(y){line(s,[-10,y,5],[10,y,5])})}if(k===1){box(s,-8,-8,5,16,16,8)}if(k===2){[[-11,5],[-3,10],[5,15]].forEach(function(q){box(s,q[0],-3,5,6,6,q[1])})}if(k===3){ring(s,0,0,5,10);ring(s,0,0,5,4)}}});
-  $$('[data-soc]').forEach(function(s){var k=+s.dataset.soc;box(s,-34,-34,0,68,68,10,'fi');
+  $$('[data-soc]').forEach(function(s){var k=s.dataset.soc;box(s,-34,-34,0,68,68,10,'fi');
     var o=P(-34,34,10),M='matrix(.866,-.5,.866,.5,'+o[0]+','+o[1]+')';
-    if(k===0){el('use',{href:'#mk',x:12,y:12,width:44,height:44,transform:M,style:'color:var(--bg)'},s)}
-    if(k===1){var t=el('text',{x:34,y:48,'text-anchor':'middle',transform:M,'class':'ti',style:'font-size:40px;font-family:var(--f-b);font-weight:500'},s);t.textContent=T('js.social.in','in')}
-    if(k===2){el('path',{d:'M12 20h44v28h-44z M12 20l22 16l22-16',transform:M,'class':'di',style:'stroke-width:1.6'},s)}});
+    if(k==='home'){el('use',{href:'#mk',x:12,y:12,width:44,height:44,transform:M,style:'color:var(--bg)'},s)}
+    if(k==='text'){var t=el('text',{x:34,y:48,'text-anchor':'middle',transform:M,'class':'ti',style:'font-size:40px;font-family:var(--f-b);font-weight:500'},s);t.textContent=s.dataset.glyph||''}
+    if(k==='mail'){el('path',{d:'M12 20h44v28h-44z M12 20l22 16l22-16',transform:M,'class':'di',style:'stroke-width:1.6'},s)}});
   scatter($('scat'),cellPx(30),.75);scatter($('scatH'),cellPx(30),.5,true);
   /* footer strip is 3 squares wide on phones, 4 on desktop: redraw when the layout switches */
   var lastCell=cellPx(30);
