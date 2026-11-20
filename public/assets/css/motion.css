@@ -74,10 +74,6 @@ html.ld{overflow:hidden}
 #procSvg.pm.go .fi{opacity:1;transform:none;transition:opacity .45s ease-out var(--d),transform .9s var(--ease-out) var(--d)}
 #procSvg.pm.go .fl{opacity:1;clip-path:inset(-6px -6px -6px 0);transition:opacity .1s linear var(--d),clip-path .65s cubic-bezier(.5,0,.2,1) var(--d)}
 #procSvg.pm.go .ft{opacity:1;clip-path:inset(0 -6px 0 -6px);transition:opacity .1s linear var(--d),clip-path .55s cubic-bezier(.4,0,.2,1) var(--d)}
-#procSvg .fdot{fill:var(--fg);opacity:0}
-#procSvg.go .fdot{animation:fdot 6s linear 3.9s infinite}
-#procSvg.nt .fdot{animation-delay:.6s}
-@keyframes fdot{0%{opacity:0;transform:translateX(0)}4%{opacity:1}48%{opacity:1}52%,to{opacity:0;transform:translateX(786px)}}
 @media (min-width:901px){
   .mv .step{opacity:0;clip-path:inset(-1px 100% -1px 0);transform:translateX(-14px)}
   .mv .step > *{opacity:0}
@@ -178,3 +174,6 @@ a:hover > .ul,a:focus-visible > .ul,.blog a:hover .ul,.nav > a:hover .ul{backgro
 .hero.hs .facts .dz{inset:0}
 .hero.hs .go .btn .dz{inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px)}
 .hscene.on + #platforms{position:relative;z-index:4}
+
+/* process: the static circles on the funnels give way to the streaming characters and squares */
+#procSvg.pm.go.live .fc{opacity:0;transition:opacity .6s ease-out}

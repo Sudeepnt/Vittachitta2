@@ -120,11 +120,36 @@
     var first=null;
     for(k=0;k<4;k++){var g=K[i++],w=document.createElementNS(NS,'g');ps.insertBefore(w,g);w.appendChild(g);if(!first)first=w;tag(w,'fi',B0+SP*k);
       if(k<3)tag(K[i++],'fl',B0+SP*k+170);tag(K[i++],'ft',B0+SP*k+300)}
-    var dot=document.createElementNS(NS,'circle');dot.setAttribute('class','fdot');dot.setAttribute('r','3');dot.setAttribute('cx','327');dot.setAttribute('cy','120');ps.insertBefore(dot,first);
+    
     $$('.step',st).forEach(function(s,n){s.style.setProperty('--d',(B0+SP*n+480)+'ms')});
     /* phone: the cards come one after another, each with its connector drawing down from the previous one */
     rv('.step','rvs',{gap:260,g:'#steps'});
-    st._on=function(instant){ps.classList.add('go');st.classList.add('go');if(instant){ps.classList.add('nt');st.classList.add('nt')}};
+    /* once the funnels and lines have drawn, the diagram keeps flowing: hex characters stream into the left funnel,
+       squares travel along every connector, squares scatter out of the right funnel */
+    var live=(function(){var CY=120,HEX='0123456789abcdef',L=[],R=[],C=[],run=0,vis=true,started=0,raf=0;
+      function mk(tag,at){var e=document.createElementNS(NS,tag);for(var a in at)e.setAttribute(a,at[a]);e.style.fill='var(--fg)';e.style.opacity='0';ps.insertBefore(e,first);return e}
+      function build(){var i,k,n,y,a,e;
+        for(i=0;i<21;i++){y=6+i*11.9;for(n=0;n<2;n++){
+          e=mk('text',{'font-size':'15','text-anchor':'middle','dominant-baseline':'central','font-family':'"DM Mono",ui-monospace,monospace'});e.textContent=HEX[(i*5+n*7)%16];
+          L.push({e:e,y:y,x0:0,x1:204,ph:((i*37)%50)/50*.5+n*.5,sp:.26+((i*13)%7)*.012,last:2});
+          e=mk('rect',{width:'5',height:'5',x:'-2.5',y:'-2.5'});
+          R.push({e:e,y:y,x0:1440,x1:1236,ph:((i*29)%50)/50*.5+n*.5,sp:.24+((i*11)%7)*.012})}}
+        for(k=0;k<3;k++){a=[327,589,851][k]+52;var b=[589,851,1113][k]-52;
+          for(n=0;n<4;n++){e=mk('rect',{width:'5',height:'5',x:'-2.5',y:'-2.5'});C.push({e:e,a:a,b:b,ph:n/4,sp:.34})}}}
+      function bz(o,t){var mx=o.x0+(o.x1-o.x0)*.55,cy2=CY+(o.y-CY)*.25,u=1-t;return [u*u*o.x0+2*u*t*mx+t*t*o.x1,u*u*o.y+2*u*t*cy2+t*t*CY]}
+      function fade(t){return t<.12?t/.12:t>.88?(1-t)/.12:1}
+      function frame(now){raf=0;if(!run||!vis)return;var T=now/1000,i,o,t,p,f;
+        for(i=0;i<L.length;i++){o=L[i];t=(T*o.sp+o.ph)%1;if(t<o.last&&o.last-t>.5)o.e.textContent=HEX[Math.floor(Math.random()*16)];o.last=t;p=bz(o,t);f=fade(t);
+          o.e.setAttribute('transform','translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+') scale('+(1-.5*t).toFixed(2)+')');o.e.style.opacity=(f*.9).toFixed(2)}
+        for(i=0;i<R.length;i++){o=R[i];t=1-((T*o.sp+o.ph)%1);p=bz(o,t);f=fade(1-t);
+          o.e.setAttribute('transform','translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+') scale('+(.45+.9*(1-t)).toFixed(2)+')');o.e.style.opacity=(f*.95).toFixed(2)}
+        for(i=0;i<C.length;i++){o=C[i];t=(T*o.sp+o.ph)%1;
+          o.e.setAttribute('transform','translate('+(o.a+(o.b-o.a)*t).toFixed(1)+' '+CY+')');o.e.style.opacity=fade(t).toFixed(2)}
+        raf=requestAnimationFrame(frame)}
+      function kick(){if(run&&vis&&!raf)raf=requestAnimationFrame(frame)}
+      if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;kick()},{rootMargin:'120px'}).observe(ps);
+      return function(delay){if(started)return;started=1;setTimeout(function(){build();ps.classList.add('live');run=1;kick()},delay)}})();
+    st._on=function(instant){ps.classList.add('go');st.classList.add('go');if(instant){ps.classList.add('nt');st.classList.add('nt')}live(instant?250:B0+SP*3+1500)};
     st._g=st;st._gap=0;st._b=0;st._p=false;ioN.observe(st);pending.push(st)})();
   var st0=$('steps');if(st0&&st0.parentNode)st0.parentNode.classList.add('mv');
   /* closing headline */
@@ -265,4 +290,25 @@
     if(mq.addEventListener)mq.addEventListener('change',refresh);
     build();
   })();
+  /* ---------- footer puzzles: the white blocks drift left to right, one at a time, slowly ----------
+     Each tick one block that has free space on its right slides one cell across. A block that reaches the right edge fades out
+     and a new one fades in at the left edge of the same row, so the pattern keeps flowing and never fills up or empties. */
+  function drift(host,C,every,first){if(!host)return;
+    var cells={},tiles=[],cols=0,rows=0,vis=false,tm=0,sig='';
+    function key(c,r){return c+','+r}
+    function sync(){var kids=[].slice.call(host.children).filter(function(k){return k.tagName==='I'}),s=kids.length+':'+(kids[0]?kids[0].style.left+kids[0].style.top:'');
+      if(s===sig&&tiles.length)return;sig=s;cells={};tiles=[];cols=Math.ceil(host.clientWidth/C);rows=Math.ceil(host.clientHeight/C);
+      kids.forEach(function(k){var t={e:k,c:Math.round(parseFloat(k.style.left)/C),r:Math.round(parseFloat(k.style.top)/C),busy:0};k.classList.add('dr');tiles.push(t);cells[key(t.c,t.r)]=t});void host.offsetWidth}
+    function step(){tm=0;if(!vis||document.hidden){return}sync();
+      var m=tiles.filter(function(t){return !t.busy&&(t.c>=cols-1||!cells[key(t.c+1,t.r)])});
+      if(m.length){var t=m[Math.floor(Math.random()*m.length)];t.busy=1;delete cells[key(t.c,t.r)];
+        if(t.c>=cols-1){t.e.style.opacity='0';
+          setTimeout(function(){if(cells[key(0,t.r)]){t.e.remove();tiles.splice(tiles.indexOf(t),1);return}
+            t.e.style.transition='none';t.c=0;t.e.style.left='0px';void t.e.offsetWidth;t.e.style.transition='';t.e.style.opacity='1';cells[key(0,t.r)]=t;setTimeout(function(){t.busy=0},700)},750)}
+        else{t.c++;cells[key(t.c,t.r)]=t;t.e.style.left=(t.c*C)+'px';setTimeout(function(){t.busy=0},1000)}}
+      tm=setTimeout(step,every)}
+    function go(){if(!tm)tm=setTimeout(step,first||every)}
+    if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis)go()},{rootMargin:'80px'}).observe(host);
+    document.addEventListener('visibilitychange',function(){if(!document.hidden&&vis)go()})}
+  drift($('scatH'),30,900,1200);drift($('scat'),30,1100,2200);
 })();
