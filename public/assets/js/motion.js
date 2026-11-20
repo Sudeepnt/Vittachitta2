@@ -308,10 +308,10 @@
           m.push([t,d,nc,nr])}}
       if(m.length){var pick=m[Math.floor(Math.random()*m.length)];t=pick[0];t.busy=1;delete cells[key(t.c,t.r)];
         t.c=pick[2];t.r=pick[3];t.last=pick[1];cells[key(t.c,t.r)]=t;t.e.style.left=(t.c*C)+'px';t.e.style.top=(t.r*C)+'px';
-        setTimeout(function(){t.busy=0},1000)}
+        setTimeout(function(){t.busy=0},950)}
       tm=setTimeout(step,every)}
     function go(){if(!tm)tm=setTimeout(step,first||every)}
     if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis)go()},{rootMargin:'80px'}).observe(host);
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&vis)go()})}
-  drift($('scatH'),30,900,1200);drift($('scat'),30,1100,2200);drift($('scatV'),30,1000,1700);
+  drift($('scatH'),30,800,600);drift($('scat'),30,450,600);drift($('scatV'),30,450,900);
 })();
