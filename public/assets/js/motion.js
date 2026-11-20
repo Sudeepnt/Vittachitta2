@@ -94,7 +94,7 @@
     function pinned(){return mq.matches&&svc.offsetParent!==null&&!!svc.style.height&&!svc.classList.contains('nopin')}
     function cutFor(n){var c=1,k;for(k=n;k<3;k++)c+=it[k].offsetHeight;return c}
     function clip(r,b){acc.style.clipPath='inset(-2px '+r+' '+b+' -2px)'}
-    function fit(n){clip('-100vw',cutFor(n)+'px')}
+    function fit(n){clip('-2px',cutFor(n)+'px')}
     function upd(){
       if(!pinned()){if(on){on=false;last=-1;acc.classList.remove('sqm');acc.style.clipPath='';it.forEach(function(a){a.classList.remove('sq','sqin');a.style.transitionDelay=''})}return}
       if(!on){on=true;acc.classList.add('sqm');it.forEach(function(a){a.classList.add('sq')});clip('calc(100% + 2px)','calc(100% - 1px)')}

@@ -56,18 +56,17 @@ html.ld{overflow:hidden}
 
 /* services: the three cards on the left arrive one after another while the section is pinned (motion.js .sqm / .sq / .sqin) */
 .acc,.acc-i{position:relative}
-.acc.sqm{transition:clip-path .45s cubic-bezier(.5,0,.15,1);z-index:3}
+.acc.sqm{transition:clip-path .8s cubic-bezier(.5,0,.15,1)}
 .acc-i.sq{pointer-events:none}
 .acc-i.sq.sqin{pointer-events:auto}
-/* later cards slide in slowly from the right edge, over the slab, and land in their place in the stack */
-.acc-i.sq:not(:first-child){opacity:0;transform:translateX(75vw);background:var(--purple);outline:1px solid var(--fg);outline-offset:-1px;transition:transform 1.3s cubic-bezier(.2,.7,.15,1),opacity .6s ease-out,outline-color .5s ease .7s}
-.acc-i.sq.sqin:not(:first-child){opacity:1;transform:none;outline-color:transparent}
+.acc-i.sq:not(:first-child){clip-path:inset(0 100% 0 0);transition:clip-path .65s cubic-bezier(.5,0,.15,1)}
+.acc-i.sq.sqin:not(:first-child){clip-path:inset(0 -2px 0 0);transition-delay:0s}
 /* title, text, then buttons, one after another */
 .acc-i.sq .acc-h,.acc-i.sq .acc-b > div > *{opacity:0;transform:translateY(8px);transition:opacity .35s ease-out,transform .35s ease-out,padding-bottom .75s cubic-bezier(.5,0,.15,1)}
-.acc-i.sq.sqin .acc-h{opacity:1;transform:none;transition:opacity .6s ease-out .55s,transform .8s var(--ease-out) .55s,padding-bottom .75s cubic-bezier(.5,0,.15,1)}
-.acc-i.sq.sqin .acc-b > div > *{opacity:1;transform:none;transition:opacity .6s ease-out .85s,transform .8s var(--ease-out) .85s}
-.acc-i.sq.sqin .acc-b > div > * + *{transition-delay:1.1s}
-.acc-i.sq.sqin .acc-b > div > * + * + *{transition-delay:1.25s}
+.acc-i.sq.sqin .acc-h{opacity:1;transform:none;transition:opacity .6s ease-out .3s,transform .8s var(--ease-out) .3s,padding-bottom .75s cubic-bezier(.5,0,.15,1)}
+.acc-i.sq.sqin .acc-b > div > *{opacity:1;transform:none;transition:opacity .6s ease-out .55s,transform .8s var(--ease-out) .55s}
+.acc-i.sq.sqin .acc-b > div > * + *{transition-delay:.85s}
+.acc-i.sq.sqin .acc-b > div > * + * + *{transition-delay:1s}
 /* the card that folds up does it slowly enough to see */
 @media (min-width:901px){.acc-b{transition:grid-template-rows .75s cubic-bezier(.5,0,.15,1)}.acc-b > div{transition:padding-bottom .75s cubic-bezier(.5,0,.15,1)}.acc-h{transition:padding-bottom .75s cubic-bezier(.5,0,.15,1)}}
 .acc.sqm .acc-i + .acc-i{border-top-color:transparent}
