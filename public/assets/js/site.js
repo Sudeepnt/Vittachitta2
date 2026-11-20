@@ -134,6 +134,8 @@
     if(k===1){var t=el('text',{x:34,y:48,'text-anchor':'middle',transform:M,'class':'ti',style:'font-size:40px;font-family:var(--f-b);font-weight:500'},s);t.textContent='in'}
     if(k===2){el('path',{d:'M12 20h44v28h-44z M12 20l22 16l22-16',transform:M,'class':'di',style:'stroke-width:1.6'},s)}});
   scatter($('scat'),30,.75);scatter($('scatH'),30,.5,true);
+  /* footer strip is 3 squares wide on phones, 4 on desktop: redraw when the layout switches */
+  if(window.matchMedia){var mqf=matchMedia('(max-width:900px)'),rsf=function(){scatter($('scat'),30,.75);scatter($('scatH'),30,.5,true);var v=$('scatV');if(v){v._H=0;v.innerHTML=''}setTimeout(placeV,50)};if(mqf.addEventListener)mqf.addEventListener('change',rsf);else if(mqf.addListener)mqf.addListener(rsf)}
   /* left column beside the contact box: joins the row above to the footer column below */
   function placeV(){var v=$('scatV'),h=$('scatH'),cb=$('cband');if(!v||!h||!cb||!cb.offsetHeight||!h.offsetHeight)return;
     var so=document.querySelector('.soc');if(so)cb.style.setProperty('--vl',Math.max(0,cb.offsetHeight-so.offsetTop-so.offsetHeight)+'px');

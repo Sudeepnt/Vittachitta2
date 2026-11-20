@@ -178,6 +178,45 @@
       return function(delay){if(started)return;started=1;setTimeout(function(){build();ps.classList.add('live');run=1;kick()},delay)}})();
     st._on=function(instant){ps.classList.add('go');st.classList.add('go');if(instant){ps.classList.add('nt');st.classList.add('nt')}live(instant?250:B0+SP*3+1500)};
     st._g=st;st._gap=0;st._b=0;st._p=false;ioN.observe(st);pending.push(st)})();
+  /* ---------- phone: the same flow, top to bottom ----------
+     characters stream down a fan into the first card, the cards follow, then squares fan out below the last one */
+  (function(){var st=$('steps'),mq=window.matchMedia&&matchMedia('(max-width:900px)');if(!st||!st.parentNode||!mq)return;
+    var NS='http://www.w3.org/2000/svg',HEX='0123456789abcdef',W=360,H=190,FH=170,CX=180,built=0,T=[],vis=0,raf=0,top,bot,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function E(tag,at,par){var e=document.createElementNS(NS,tag);for(var a in at)e.setAttribute(a,at[a]);if(par)par.appendChild(e);return e}
+    function mkSvg(cls,label){var sv=E('svg',{'class':'proc-v iso '+cls,viewBox:'0 0 '+W+' '+H,'aria-hidden':'true'});return sv}
+    /* point along a fan curve; fan 'in' narrows downwards to (CX,FH), fan 'out' widens downwards from (CX,20) */
+    function pt(o,t){var u=1-t,x0=o.x,y0=o.y0,x1=CX,y1=o.y1,cx=CX+(o.x-CX)*.25,cy=y0+(y1-y0)*.55;
+      return [u*u*x0+2*u*t*cx+t*t*x1,u*u*y0+2*u*t*cy+t*t*y1]}
+    function build(){if(built)return;built=1;top=mkSvg('pv-in');bot=mkSvg('pv-out');
+      var i,n,x,e;
+      for(i=0;i<21;i++){x=6+i*(W-12)/20;
+        E('path',{d:'M'+x+',0 Q'+(CX+(x-CX)*.25)+','+(FH*.55)+' '+CX+','+FH,'class':'dt'},top);
+        E('path',{d:'M'+CX+',20 Q'+(CX+(x-CX)*.25)+','+(20+(H-20)*.45)+' '+x+','+H,'class':'dt'},bot);
+        for(n=0;n<2;n++){
+          e=E('text',{'font-size':'13','text-anchor':'middle','dominant-baseline':'central','font-family':'"DM Mono",ui-monospace,monospace'},top);e.textContent=HEX[(i*5+n*7)%16];e.style.fill='var(--fg)';
+          T.push({e:e,x:x,y0:0,y1:FH,ph:((i*37)%50)/50*.5+n*.5,sp:.26+((i*13)%7)*.012,kind:0,last:2});
+          e=E('rect',{width:'5',height:'5',x:'-2.5',y:'-2.5'},bot);e.style.fill='var(--fg)';
+          T.push({e:e,x:x,y0:20,y1:H,ph:((i*29)%50)/50*.5+n*.5,sp:.24+((i*11)%7)*.012,kind:1})}}
+      E('line',{x1:CX,y1:FH,x2:CX,y2:H,'class':'dt'},top);E('line',{x1:CX,y1:0,x2:CX,y2:20,'class':'dt'},bot);
+      st.parentNode.insertBefore(top,st);st.parentNode.insertBefore(bot,st.nextSibling);
+      if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.target===top||en.target===bot){en.target._v=en.isIntersecting}});vis=(top._v||bot._v)?1:0;kick()},{rootMargin:'160px'});io.observe(top);io.observe(bot)}else{vis=1}
+      place(.35);kick()}
+    function fade(t){return t<.12?t/.12:t>.88?(1-t)/.12:1}
+    function place(fixed){var now=fixed==null?performance.now()/1000:0,i,o,t,p,f;
+      for(i=0;i<T.length;i++){o=T[i];t=fixed!=null?(o.ph+fixed)%1:(now*o.sp+o.ph)%1;
+        if(o.kind===0){if(t<o.last&&o.last-t>.5)o.e.textContent=HEX[Math.floor(Math.random()*16)];o.last=t;p=pt(o,t);f=fade(t);
+          o.e.setAttribute('transform','translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+') scale('+(1-.5*t).toFixed(2)+')');o.e.style.opacity=(f*.9).toFixed(2)}
+        else{t=1-t;p=pt({x:o.x,y0:o.y0,y1:o.y1},t);f=fade(1-t);
+          /* out-fan runs from the apex outwards: t=1 at the apex */
+          var q=1-t;var u=1-q,cx=CX+(o.x-CX)*.25,cy=o.y0+(o.y1-o.y0)*.45;
+          p=[u*u*CX+2*u*q*cx+q*q*o.x,u*u*o.y0+2*u*q*cy+q*q*o.y1];
+          o.e.setAttribute('transform','translate('+p[0].toFixed(1)+' '+p[1].toFixed(1)+') scale('+(.45+.9*q).toFixed(2)+')');o.e.style.opacity=(fade(q)*.95).toFixed(2)}}}
+    function frame(){raf=0;if(!vis||!mq.matches||document.hidden)return;place();raf=requestAnimationFrame(frame)}
+    function kick(){if(still||raf||!vis||!mq.matches)return;raf=requestAnimationFrame(frame)}
+    document.addEventListener('visibilitychange',kick);
+    function init(){if(mq.matches)build();kick()}
+    if(mq.addEventListener)mq.addEventListener('change',init);else if(mq.addListener)mq.addListener(init);
+    init()})();
   var st0=$('steps');if(st0&&st0.parentNode)st0.parentNode.classList.add('mv');
   /* closing headline */
   var ch=document.querySelector('#cband h2');if(ch){prep(ch);ch._on=function(){roll(ch)};ch.classList.add('rvn');ioN.observe(ch)}

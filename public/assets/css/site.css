@@ -249,8 +249,8 @@ footer{position:relative;overflow:hidden;padding:56px calc(var(--pad) + var(--sa
 .fbot .lg button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0}
 @media (max-width:900px){
   .cband{grid-template-columns:1fr}.codew{margin:0 0 0 calc(16px + var(--safe-l));min-height:0}.codew pre{min-height:300px}
-  .soc{margin:40px 0 0 0;width:100%;height:220px}.cband .l{padding-bottom:0}.scat,.scat-h,.scat-v{display:none}.cband::after{display:none}
-  footer{padding-left:calc(16px + var(--safe-l))}
+  .soc{margin:0 0 0 calc(-1 * var(--pad) + 90px);width:calc(100% + 2 * var(--pad) - 90px);height:220px}.cband .l{padding-bottom:0}.scat-h{height:90px;margin-top:32px}.scat-v{width:90px}.cband::after,.scat::after{left:90px}.codew{display:none}.scat{width:90px}.soc-g{grid-template-columns:1.25fr 1fr}
+  footer{padding-left:calc(90px + 20px + var(--safe-l))}
   .fcols{grid-template-columns:1fr 1fr}.fcols > div:first-child{grid-column:1/-1}
   .fbot{flex-direction:column;align-items:flex-start;margin-top:56px}.fbot .bigwm{width:100%}.fbot .lg{text-align:left}
 }
@@ -361,3 +361,36 @@ p > .wip:first-child{margin-left:0;margin-right:8px}
   .soc:has(a:nth-child(3):hover) .soc-g{grid-template-columns:1.6fr 1.4fr;grid-template-rows:.7fr 1.3fr}
   .soc.hint .soc-g{grid-template-columns:2.25fr .75fr;transition-duration:.9s}
 }
+
+/* ---------- phone polish: comfortable touch targets, no iOS input zoom, readable fine print ---------- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+a,button,summary,label,input,select,textarea{touch-action:manipulation}
+@media (max-width:900px){
+  .formv input,.formv select,.formv textarea,.inl input{font-size:16px}
+  .formv input,.formv select{min-height:48px}
+  .inl{max-width:none}.inl input{min-height:48px}
+  .lnk{display:inline-block;padding:11px 0}
+  .fcols h4{margin-bottom:6px}
+  .fcols li{line-height:1}.fcols li a{display:inline-block;padding:11px 0;line-height:22px}
+  .fcols .em{display:inline-block;padding:6px 0}
+  .fbot .lg{font-size:11px;line-height:20px}
+  .fbot .lg label{display:inline-flex;align-items:center;gap:10px;padding:10px 0}
+  .fbot .lg input[type=checkbox]{width:20px;height:20px;margin:0}
+  .tagm,.wip{font-size:11px}
+  .fg summary{min-height:52px}
+  .letter-full p{font-size:16px;line-height:26px}
+}
+@media (max-width:900px){.cband{grid-template-columns:minmax(0,1fr)}.cband .btns{flex-wrap:wrap}.codew pre{overflow-wrap:anywhere}}
+@media (max-width:600px){.formv .btns,.formv form > div:last-of-type{flex-direction:column}.formv .btns .btn,.formv form .btn{width:100%}}
+@media (max-width:700px){.hero-r .facts{flex-direction:column;flex-wrap:nowrap;align-items:flex-start;gap:10px}}
+
+/* phone: process flow runs top to bottom (the funnels are drawn by motion.js) */
+.proc-v{display:none}
+@media (max-width:900px){
+  .proc-v{display:block;width:100%;height:auto}
+  .proc-v.pv-in{margin-bottom:0}
+  #process .steps{padding-bottom:0}
+  .proc-v.pv-out{margin-bottom:var(--sec)}
+}
+@media (max-width:900px){.fcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px 16px}.fcols h4{font-size:20px;overflow-wrap:anywhere}.fcols li a{overflow-wrap:anywhere}}
+@media (max-width:900px){#table{overflow-x:clip}}
