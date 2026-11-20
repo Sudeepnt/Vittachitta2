@@ -100,8 +100,14 @@ html.ld{overflow:hidden}
 @keyframes nudge{0%,70%,to{transform:translate(0)}35%{transform:translate(-4px,-4px)}}
 
 /* services slabs */
-.iso.dn .tp{animation:slabdn .8s var(--ease-out) both}
-.iso.dn .lo{animation:lodn .8s var(--ease-out) both}
+/* the new top plate slides in slowly from the right and settles onto the stack; the plates below sink to make room */
+#svcSvg{overflow:visible}
+.iso.dn .tp{animation:slabin 1.6s cubic-bezier(.2,.7,.15,1) both}
+.iso.dn .lo{animation:lodn 1.2s cubic-bezier(.2,.7,.15,1) .25s both}
+@keyframes slabin{0%{transform:translate(300px,-80px);opacity:0}22%{opacity:1}}
+/* the plate that was on top stays solid until the new one has nearly landed on it */
+.iso.dn .lo polygon:nth-last-child(-n+3){animation:lofill 1.5s linear both}
+@keyframes lofill{0%,60%{fill:var(--fg);stroke:var(--bg)}100%{fill:var(--bg);stroke:var(--fg)}}
 .iso.up .tp{animation:slabup .6s var(--ease-out) both}
 .iso.up .lo{animation:loup .6s var(--ease-out) both}
 @keyframes slabdn{0%{transform:translateY(-110px);opacity:0}45%{opacity:1}}
